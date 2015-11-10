@@ -34,11 +34,12 @@ class customerautogroups extends Module
         $this->tab           = 'hhennes';
         $this->version       = '0.1.0';
         $this->need_instance = 0;
+        $this->ps_versions_compliancy = array('min' => '1.6'); 
 
         parent::__construct();
 
         $this->displayName = $this->l('Customers Auto groups');
-        $this->description = $this->l('Add automaticaly customers to groups depending from params');
+        $this->description = $this->l('Add automaticaly customers to groups depending from params after registration');
     }
 
     /**
@@ -53,8 +54,9 @@ class customerautogroups extends Module
 
         //Création d'une tab prestashop
         $tab             = new Tab();
-        $tab->class_name = 'rules';
+        $tab->class_name = 'Rules';
         $tab->module     = $this->name;
+        $tab->id_parent = Tab::getIdFromClassName('AdminParentCustomer');
         $languages       = Language::getLanguages();
         foreach ($languages as $lang) {
             $tab->name[$lang['id_lang']] = 'Customer Auto Groups';
@@ -119,22 +121,10 @@ class customerautogroups extends Module
             $tab->delete();
         }
 
-        Db::getInstance("DROP table `"._DB_PREFIX_."autogroup_rule`");
-        Db::getInstance("DROP table `"._DB_PREFIX_."autogroup_rule_lang`");
+        Db::getInstance("DROP TABLE IF EXISTS `"._DB_PREFIX_."autogroup_rule`");
+        Db::getInstance("DROP TABLE IF EXISTS `"._DB_PREFIX_."autogroup_rule_lang`");
 
         return parent::uninstall();
-    }
-
-    /**
-     * Configuration Admin du module
-     * @ToDO : Faire plutot une table avec un object model
-     */
-    public function getContent()
-    {
-        /*$customer = new Customer(2);
-        $this->_processGroupRules($customer);
-
-        return 'test';*/
     }
 
     /**

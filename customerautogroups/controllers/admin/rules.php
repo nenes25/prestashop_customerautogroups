@@ -27,6 +27,19 @@ include_once dirname(__FILE__).'/../../classes/AutoGroupRule.php';
 
 class RulesController extends ModuleAdminController
 {
+    //Champs clients exclus de la condition
+    protected $_customerExcludedFields = array('id', 'secure_key', 'ip_registration_newsletter', 'id_default_group', 'last_passwd_gen', 'last_passwd_gen',
+        'passwd', 'definition', 'date_add', 'date_upd');
+
+    //Champs clients
+    protected $customerFields;
+
+    //Champs addresse exclus de la condition
+    protected $_addressExcludedFields = array('force_id', 'id_customer', 'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted', 'definition', 'date_add',
+        'date_upd');
+
+    //Champs adresse
+    protected $addressFields = array();
 
     public function __construct()
     {
@@ -64,6 +77,17 @@ class RulesController extends ModuleAdminController
         parent::__construct();
     }
 
+
+    /**
+     * Définition des médias du controller
+     */
+    public function setMedia()
+    {
+        parent::setMedia();
+        $this->addJS(_MODULE_DIR_.'customerautogroups/views/admin/js/customerautogroups.js');
+    }
+
+
     /**
      * Affichage de la liste
      */
@@ -74,10 +98,41 @@ class RulesController extends ModuleAdminController
     }
 
     /**
+     * Initialisation des variables du formulaires
+     */
+    protected function _initForm()
+    {
+        //Liste des cas de conditions
+        $this->conditionsType = array(
+            array('id' => AutoGroupRule::RULE_TYPE_CUSTOMER, 'value' => 'Customer'),
+            array('id' => AutoGroupRule::RULE_TYPE_ADDRESS, 'value' => 'Address'),
+        );
+
+        //Liste des champs disponibles pour la classe Customer
+        $fields         = get_class_vars('Customer');
+        $this->customerFields = array();
+        foreach ($fields as $key => $value) {
+            if (!in_array($key, $this->_customerExcludedFields)) {
+                $this->customerFields[] = array('id' => $key, 'value' => $key);
+            }
+        }
+
+        //Liste des champs disponibles pour la classe Customer
+        $afields       = get_class_vars('Address');
+        foreach ($afields as $key => $value) {
+            if (!in_array($key, $this->_addressExcludedFields)) {
+                $this->addressFields[] = array('id' => $key, 'value' => $key);
+            }
+        }
+    }
+
+    /**
      * Affichage du formulaire d'édition
      */
     public function renderForm()
     {
+        $this->_initForm();
+        
         //Liste des priorités
         $priorities   = array();
         for ($i = 0; $i <= 10; $i++)
@@ -86,20 +141,14 @@ class RulesController extends ModuleAdminController
         //Liste des groupes clients
         $customerGroups = Group::getGroups($this->context->language->id);
 
-        //Liste des cas de conditions
-        $conditionsType = array(
-            array('id' => '1' , 'value' => 'Customer'),
-            array('id' => '2' , 'value' => 'Address'),
-        );
-
         //Liste des opérateurs
         $operatorsList = array(
-            array('id' => '=' , 'value' => '='),
-            array('id' => '!=' , 'value' => '!='),
-            array('id' => '>' , 'value' => '>'),
-            array('id' => '>=' , 'value' => '>='),
-            array('id' => '<' , 'value' => '<'),
-            array('id' => '<=' , 'value' => '<='),
+            array('id' => '=', 'value' => '='),
+            array('id' => '!=', 'value' => '!='),
+            array('id' => '>', 'value' => '>'),
+            array('id' => '>=', 'value' => '>='),
+            array('id' => '<', 'value' => '<'),
+            array('id' => '<=', 'value' => '<='),
         );
 
         $this->fields_form = array(
@@ -127,29 +176,37 @@ class RulesController extends ModuleAdminController
                     'label' => $this->l('Condition type'),
                     'name' => 'condition_type',
                     'required' => true,
+                    'class' => 'condition_type',
                     'options' => array(
-                        'query' => $conditionsType,
+                        'query' => $this->conditionsType,
                         'id' => 'id',
                         'name' => 'value',
-                        ),
+                    ),
                     'hint' => $this->l('The condition fields depend from the type')
                 ),
+                //Le changement du select précédent entraine le changement de celui-ci
                 array(
-                    'type' => 'text',
+                    'type' => 'select',
                     'label' => $this->l('Condition Field'),
                     'name' => 'condition_field',
-                    'required' => true
+                    'class' => 'condition_field',
+                    'required' => true,
+                    'options' => array(
+                        'query' => $this->customerFields,
+                        'id' => 'id',
+                        'name' => 'value',
+                    ),
                 ),
                 array(
                     'type' => 'select',
                     'label' => $this->l('Condition Operator'),
                     'name' => 'condition_operator',
                     'required' => true,
-                     'options' => array(
+                    'options' => array(
                         'query' => $operatorsList,
                         'id' => 'id',
                         'name' => 'value',
-                        )
+                    )
                 ),
                 array(
                     'type' => 'text',
@@ -202,6 +259,14 @@ class RulesController extends ModuleAdminController
                     ),
                     'hint' => $this->l('If enable this rule will be the latest processed')
                 ),
+                //Token pour action ajax
+                array(
+                    'type' => 'hidden',
+                    'label' => 'token',
+                    'name' => 'token',
+                    'value' => $this->token,
+                    'required'=> false,
+                )
             ),
             'submit' => array(
                 'title' => $this->l('Save')
@@ -209,6 +274,40 @@ class RulesController extends ModuleAdminController
         );
 
         return parent::renderForm();
+    }
+
+    /**
+     * Ajout du bouton d'ajout dans la toolbar
+     */
+    public function initPageHeaderToolbar()
+    {
+        $this->page_header_toolbar_btn['new_rule'] = array(
+            'href' => self::$currentIndex.'&addautogroup_rule&token='.$this->token,
+            'desc' => $this->l('Add new rule', null, null, false),
+            'icon' => 'process-icon-new'
+        );
+
+
+        parent::initPageHeaderToolbar();
+    }
+
+    /**
+     * Mise à jour ajax des champs des règles en fonction du type
+     */
+    public function displayAjaxUpdateConditionTypeSelect(){
+
+        $this->_initForm();
+
+        if ( Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_CUSTOMER ) {
+            $fields = $this->customerFields;
+        }
+        else {
+            $fields = $this->addressFields;
+        }
+        
+        foreach ( $fields as $field ) {
+            echo '<option value="'.$field['id'].'">'.$field['value'].'</option>';
+        }
     }
 }
 ?>
