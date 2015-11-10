@@ -169,7 +169,7 @@ class customerautogroups extends Module
             //Traitement des règles de type Adresse
             else if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS ) {
                 //Normalement vu que le client vient d'être créé il ne peut avoir qu'une adresse
-                $id_address = Db::getInstance()->getValue("SELECT id_adress FROM "._DB_PREFIX_."address WHERE id_customer".$customer->id);
+                $id_address = Db::getInstance()->getValue("SELECT id_address FROM "._DB_PREFIX_."address WHERE id_customer=".$customer->id);
                 $obj        = new Address($id_address);
             }
             //Type Inconnu : non traité
@@ -190,27 +190,27 @@ class customerautogroups extends Module
             switch ($rule['condition_operator']) {
 
                 case '=':
-                    if ($customer->{$rule['condition_field']} == $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} == $rule['condition_value']) $ruleApplied = true;
                     break;
 
                 case '!=':
-                    if ($customer->{$rule['condition_field']} != $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} != $rule['condition_value']) $ruleApplied = true;
                     break;
 
                 case '>':
-                    if ($customer->{$rule['condition_field']} > $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} > $rule['condition_value']) $ruleApplied = true;
                     break;
 
                 case '>=':
-                    if ($customer->{$rule['condition_field']} >= $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} >= $rule['condition_value']) $ruleApplied = true;
                     break;
 
                 case '<':
-                    if ($customer->{$rule['condition_field']} < $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} < $rule['condition_value']) $ruleApplied = true;
                     break;
 
                 case '<=':
-                    if ($customer->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
                     break;
             }
 
