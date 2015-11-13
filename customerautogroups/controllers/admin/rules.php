@@ -151,6 +151,15 @@ class RulesController extends ModuleAdminController
             array('id' => '<=', 'value' => '<='),
         );
 
+        //Avec Prestashop < 1.6 le type switch n'existe pas il faut le remplacer par un radio
+        if ( _PS_VERSION_ < '1.6') {
+            $switch_type = 'radio';
+        }
+        else {
+            $switch_type = 'switch';
+        }
+
+
         $this->fields_form = array(
             'legend' => array(
                 'title' => $this->l('Edit Rule'),
@@ -239,9 +248,10 @@ class RulesController extends ModuleAdminController
                     )
                 ),
                 array(
-                    'type' => 'switch',
+                    'type' => $switch_type,
                     'label' => $this->l('Active'),
                     'name' => 'active',
+                    'class' => 't',
                     'required' => true,
                     'values' => array(
                         array('id' => 'on', 'value' => 1, 'label' => $this->l('Yes')),
@@ -249,9 +259,10 @@ class RulesController extends ModuleAdminController
                     )
                 ),
                 array(
-                    'type' => 'switch',
+                    'type' => $switch_type,
                     'label' => $this->l('Stop processing further rules'),
                     'name' => 'stop_processing',
+                    'class' => 't',
                     'required' => true,
                     'values' => array(
                         array('id' => 'on', 'value' => 1, 'label' => $this->l('Yes')),

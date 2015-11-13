@@ -1,0 +1,1 @@
+V 0.1.1 - 2015-11-13 : Compatiblité Prestashop 1.5 // Prestashop 1.5 compatibility

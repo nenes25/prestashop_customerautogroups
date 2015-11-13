@@ -32,9 +32,9 @@ class customerautogroups extends Module
         $this->author        = 'europe_internet';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.1.0';
+        $this->version       = '0.1.1';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.6'); 
+        //$this->ps_versions_compliancy = array('min' => '1.5');
 
         parent::__construct();
 
@@ -215,7 +215,7 @@ class customerautogroups extends Module
             }
 
             if ($ruleApplied) {
-                echo 'Ajout de la règle '.$rule['id_rule'].' pour le client <br />';
+                echo sprintf( $this->l('Rule %d applied for custimer'),$rule['id_rule']).'<br />';
                 $customerGroups[] = $rule['id_group'];
             }
 
