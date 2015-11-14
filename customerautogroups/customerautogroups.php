@@ -29,12 +29,11 @@ class customerautogroups extends Module
 
     public function __construct()
     {
-        $this->author        = 'europe_internet';
+        $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.1.1';
+        $this->version       = '0.1.2';
         $this->need_instance = 0;
-        //$this->ps_versions_compliancy = array('min' => '1.5');
 
         parent::__construct();
 

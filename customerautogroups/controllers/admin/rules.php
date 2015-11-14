@@ -40,6 +40,9 @@ class RulesController extends ModuleAdminController
 
     //Champs adresse
     protected $addressFields = array();
+    
+    //Données du champ condition_field
+    protected $_conditionFieldDatas;
 
     public function __construct()
     {
@@ -124,6 +127,18 @@ class RulesController extends ModuleAdminController
                 $this->addressFields[] = array('id' => $key, 'value' => $key);
             }
         }
+        
+        //Gestion de l'affichage du champ "condition_field" pour les règles déjà existantes
+        if ( Tools::getValue('id_rule')) {
+            $rule = new AutoGroupRule(Tools::getValue('id_rule'));
+            if ( $rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER )
+                $this->_conditionFieldDatas = $this->customerFields;
+            else
+                $this->_conditionFieldDatas = $this->addressFields;
+        }
+        else {
+            $this->_conditionFieldDatas = $this->customerFields;
+        }
     }
 
     /**
@@ -201,7 +216,7 @@ class RulesController extends ModuleAdminController
                     'class' => 'condition_field',
                     'required' => true,
                     'options' => array(
-                        'query' => $this->customerFields,
+                        'query' => $this->_conditionFieldDatas,
                         'id' => 'id',
                         'name' => 'value',
                     ),

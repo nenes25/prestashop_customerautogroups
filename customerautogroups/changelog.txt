@@ -1,1 +1,2 @@
-V 0.1.1 - 2015-11-13 : Compatiblit� Prestashop 1.5 // Prestashop 1.5 compatibility
+V 0.1.1 - 2015-11-13 : Compatiblité Prestashop 1.5 // Prestashop 1.5 compatibility
+V 0.1.2 - 2015-11-14 : Correctif affichage conditions de type addresse déjà enregistrées // Display fix for existing rules with address condition
