@@ -173,13 +173,13 @@ class customerautogroups extends Module
             }
             //Type Inconnu : non traité
             else {
-                echo $this->l('Error : rule type unknow');
+                //echo $this->l('Error : rule type unknow');
                 continue;
             }
 
             //Il faut que la propriété de l'objet existe
             if (!property_exists($obj, $rule['condition_field'])) {
-                echo sprintf($this->l('Error : Unknow proprerty %s for class %'), $rule['condition_field'], get_class($obj));
+                //echo sprintf($this->l('Error : Unknow proprerty %s for class %'), $rule['condition_field'], get_class($obj));
                 continue;
             }
 
@@ -214,7 +214,7 @@ class customerautogroups extends Module
             }
 
             if ($ruleApplied) {
-                echo sprintf( $this->l('Rule %d applied for custimer'),$rule['id_rule']).'<br />';
+                //echo sprintf( $this->l('Rule %d applied for customer'),$rule['id_rule']).'<br />';
                 $customerGroups[] = $rule['id_group'];
             }
 
