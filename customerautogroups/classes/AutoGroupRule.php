@@ -41,6 +41,8 @@ class AutoGroupRule extends ObjectModel
     public $active;
     public $priority;
     public $stop_processing;
+    public $default_group;
+    public $clean_groups;
     public $date_add;
     public $date_upd;
 
@@ -57,6 +59,8 @@ class AutoGroupRule extends ObjectModel
             'active' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
             'priority' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
             'stop_processing' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+            'default_group' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+            'clean_groups' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
             // Lang fields

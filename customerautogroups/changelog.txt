@@ -1,2 +1,4 @@
 V 0.1.1 - 2015-11-13 : Compatiblité Prestashop 1.5 // Prestashop 1.5 compatibility
 V 0.1.2 - 2015-11-14 : Correctif affichage conditions de type addresse déjà enregistrées // Display fix for existing rules with address condition
+V 2.0.0 - 2015-12-07 : Ajout de la possibilité de definir le groupe par défaut, et de supprimer tous les autres groupes ( pour les règles stop processing)
+                       New fonctionnalities allows you to define customer default group, and to delete others groups ( for stop processing rules )

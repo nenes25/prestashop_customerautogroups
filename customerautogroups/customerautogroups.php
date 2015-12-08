@@ -32,7 +32,7 @@ class customerautogroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.1.2';
+        $this->version       = '0.2.0';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -89,6 +89,8 @@ class customerautogroups extends Module
                     `active` tinyint(1) unsigned NOT NULL,
                     `priority` tinyint(2) unsigned NOT NULL,
                     `stop_processing` tinyint(1) unsigned NOT NULL,
+                    `default_group` tinyint(1) unsigned NOT NULL,
+                    `clean_groups` tinyint(1) unsigned NOT NULL,
                     `date_add` datetime NOT NULL,
                     `date_upd` datetime NOT NULL,
                     PRIMARY KEY (`id_rule`)
@@ -185,6 +187,8 @@ class customerautogroups extends Module
 
             //On teste la conditon
             $ruleApplied = false;
+            $defaultGroup = false;
+            $cleanGroups = false;
 
             switch ($rule['condition_operator']) {
 
@@ -219,14 +223,31 @@ class customerautogroups extends Module
             }
 
             //Si la règle doit être la dernière à être traitée, on sors de la boucle
-            if ($rule['stop_processing'] == 1)
+            if ($rule['stop_processing'] == 1) {
+                if ( $rule['default_group'] == 1) {
+                    $defaultGroup = $rule['id_group'];
+                }
+                if ( $rule['clean_groups'] == 1) {
+                    $cleanGroups = true;
+                }
                 break;
+            }
         }
 
         //Ajout du client aux groupes nécessaires
         if ( sizeof($customerGroups)) {
+
+            //Si le flag de suppression des groupes
+            if ( $cleanGroups )
+                $customer->cleanGroups();
+
+            //Application du groupe par défaut
+            if ( $defaultGroup )
+                $customer->id_default_group = $defaultGroup;
+
             //Suppression des doublons
             $customerGroups = array_unique($customerGroups);
+
             //Ajout du client aux groups nécessaires
             $customer->addGroups($customerGroups);
         }

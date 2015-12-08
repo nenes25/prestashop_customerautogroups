@@ -40,7 +40,7 @@ class RulesController extends ModuleAdminController
 
     //Champs adresse
     protected $addressFields = array();
-    
+
     //Données du champ condition_field
     protected $_conditionFieldDatas;
 
@@ -74,6 +74,8 @@ class RulesController extends ModuleAdminController
             'id_group' => array('title' => $this->l('Id group'), 'class' => 'fixed-width-sm', 'align' => 'center',),
             'priority' => array('title' => $this->l('Priority'), 'align' => 'center', 'class' => 'fixed-width-sm'),
             'stop_processing' => array('title' => $this->l('Stop processing'), 'active' => 'stop_processing', 'type' => 'bool', 'align' => 'center'),
+            'default_group'  => array('title' => $this->l('Default customer Group'), 'active' => 'default_group', 'type' => 'bool', 'align' => 'center'),
+            'clean_groups'  => array('title' => $this->l('Delete all others groups'), 'active' => 'clean_groups', 'type' => 'bool', 'align' => 'center'),
             'active' => array('title' => $this->l('Status'), 'active' => 'status', 'type' => 'bool', 'align' => 'center'),
         );
 
@@ -127,7 +129,7 @@ class RulesController extends ModuleAdminController
                 $this->addressFields[] = array('id' => $key, 'value' => $key);
             }
         }
-        
+
         //Gestion de l'affichage du champ "condition_field" pour les règles déjà existantes
         if ( Tools::getValue('id_rule')) {
             $rule = new AutoGroupRule(Tools::getValue('id_rule'));
@@ -147,7 +149,7 @@ class RulesController extends ModuleAdminController
     public function renderForm()
     {
         $this->_initForm();
-        
+
         //Liste des priorités
         $priorities   = array();
         for ($i = 0; $i <= 10; $i++)
@@ -285,6 +287,30 @@ class RulesController extends ModuleAdminController
                     ),
                     'hint' => $this->l('If enable this rule will be the latest processed')
                 ),
+                array(
+                    'type' => $switch_type,
+                    'label' => $this->l('Default customer Group'),
+                    'name' => 'default_group',
+                    'class' => 't',
+                    'required' => true,
+                    'values' => array(
+                        array('id' => 'on', 'value' => 1, 'label' => $this->l('Yes')),
+                        array('id' => 'off', 'value' => 0, 'label' => $this->l('No')),
+                    ),
+                    'hint' => $this->l('Only works for rule which stop processing')
+                ),
+                array(
+                    'type' => $switch_type,
+                    'label' => $this->l('Delete all others groups'),
+                    'name' => 'clean_groups',
+                    'class' => 't',
+                    'required' => true,
+                    'values' => array(
+                        array('id' => 'on', 'value' => 1, 'label' => $this->l('Yes')),
+                        array('id' => 'off', 'value' => 0, 'label' => $this->l('No')),
+                    ),
+                    'hint' => $this->l('Only works for rule which stop processing')
+                ),
                 //Token pour action ajax
                 array(
                     'type' => 'hidden',
@@ -330,7 +356,7 @@ class RulesController extends ModuleAdminController
         else {
             $fields = $this->addressFields;
         }
-        
+
         foreach ( $fields as $field ) {
             echo '<option value="'.$field['id'].'">'.$field['value'].'</option>';
         }
