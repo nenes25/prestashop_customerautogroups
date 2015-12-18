@@ -155,6 +155,16 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         
         //On s'assure que les groupes du client correspondent à ceux choisis
         $this->assertEquals($groups,$customerGroups);
+        
+        //Si on veut verifier le groupe par défaut du client
+        if (array_key_exists('default_group', $customerDatas)) {
+            if ( $customerDatas['default_group'] == 'default')
+                $defaultGroup = 3;
+            else
+                $defaultGroup = $this->_getCustomerGroupId($group);
+            
+            $this->assertEquals($customer->id_default_group,$defaultGroup);
+        }
     }
     
     /**
@@ -181,6 +191,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 'address_id_state' => 0,
                 'address_phone' => '0836656565',
                 'expected_groups' => array('us_group'),
+                'default_group' => 'us_group',
             )),
             array('customer_fr' => array(
                 'id_gender' => 1,
@@ -199,6 +210,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 'address_id_state' => 0,
                 'address_phone' => '0836656565',
                 'expected_groups' => array('fr_group'),
+                'default_group' => 'fr_group',
             )),
             array('customer_male' => array(
                 'id_gender' => 1,
@@ -217,6 +229,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 'address_id_state' => 0,
                 'address_phone' => '0836656565',
                 'expected_groups' => array('default','male_users'),
+                'default_group' => 'default',
             ))
         );
         
@@ -225,6 +238,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     /**
      * Création d'un client
      * @param array $datas
+     * @return Customer $customer
      */
     protected function _createCustomer($datas) {
 
