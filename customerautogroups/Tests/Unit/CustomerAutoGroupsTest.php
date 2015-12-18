@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Tests du bon fonctionnement du module
+ * Tests du bon fonctionnement du module CustomerAutoGroups
  *
- * @author herve
+ * @author hhennes <contact@h-hennes.fr>
  */
-//Voir comment inclure la config
+//@ToDo : Fixé en dur pour tests locaux, rendre dynamique
 include_once '/var/www/public/prestashop/prestashop_1-6-1-1/config/config.inc.php';
 include_once _PS_MODULE_DIR_ . '/customerautogroups/classes/AutoGroupRule.php';
 
@@ -79,18 +79,18 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
 
         return array(
             array('rule_us' => array(
-                    'name' => 'US group auto',
-                    'description' => 'Auto groups for us customers',
-                    'condition_type' => 2, //1 customer , 2 addresse
-                    'condition_field' => 'id_country',
-                    'condition_operator' => '=',
-                    'condition_value' => '21',
-                    'customer_group_name' => 'us_group',
-                    'priority' => 0,
-                    'active' => 1,
-                    'stop_processing' => 1,
-                    'default_group' => 1,
-                    'clean_groups' => 1,
+                    'name' => 'US group auto', // Nom de la règle
+                    'description' => 'Auto groups for us customers', //Description de la règle
+                    'condition_type' => 2, // Type de condition 1 customer / 2 addresse
+                    'condition_field' => 'id_country', //Champ condition
+                    'condition_operator' => '=', // Operateur
+                    'condition_value' => '21', // Valeur du champ
+                    'customer_group_name' => 'us_group', // Groupe a assigner à l'utilisateur ( créé automatiquement )
+                    'priority' => 0, //Priorité règle 0 Haute 10 Basse
+                    'active' => 1, //Règle active 1 / Inactive 0
+                    'stop_processing' => 1, //Arrêter de traiter les règles suivantes 1 Oui / 0 Non
+                    'default_group' => 1, // Définir comme group par défaut pour l'utilisateur 1 Oui / 0 Non
+                    'clean_groups' => 1, // Supprimer tous les autres groupes de l'utilisateur 1 Oui / 0 Non
                 )),
             array('rule_fr' => array(
                     'name' => 'FR group auto',
@@ -105,6 +105,20 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                     'stop_processing' => 1,
                     'default_group' => 1,
                     'clean_groups' => 1,
+                )),
+            array('male_users' => array(
+                    'name' => 'Males user',
+                    'description' => 'Auto groups for male users',
+                    'condition_type' => 1, //1 customer , 2 addresse
+                    'condition_field' => 'id_gender',
+                    'condition_operator' => '=',
+                    'condition_value' => '1',
+                    'customer_group_name' => 'male_users',
+                    'priority' => 1,
+                    'active' => 1,
+                    'stop_processing' => 0,
+                    'default_group' => 0,
+                    'clean_groups' => 0,
                 )),
             
         );
@@ -140,7 +154,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         $groups = $customer->getGroups();
         
         //On s'assure que les groupes du client correspondent à ceux choisis
-        $this->assertEquals(sort($groups),sort($customerGroups));
+        $this->assertEquals($groups,$customerGroups);
     }
     
     /**
@@ -185,6 +199,24 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 'address_id_state' => 0,
                 'address_phone' => '0836656565',
                 'expected_groups' => array('fr_group'),
+            )),
+            array('customer_male' => array(
+                'id_gender' => 1,
+                'firstname' => 'herve',
+                'lastname' => 'male',
+                'email' => sprintf("testmale%s@test.com",time()),
+                'password' => 'test2015',
+                'add_address' => 1,
+                'address_firstname' => 'herve',
+                'address_lastname' => 'herve',
+                'address_address1' => '16 rue des tests',
+                'address_address2' => '',
+                'address_postcode' => '67000',
+                'address_city' => 'Strasbourg',
+                'address_id_country' => 15, //Pas france , ni us
+                'address_id_state' => 0,
+                'address_phone' => '0836656565',
+                'expected_groups' => array('default','male_users'),
             ))
         );
         
@@ -239,7 +271,8 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     /**
      * Récupération de l'identifiant du groupe client
      * ( Création d'un groupe si nécessaire )
-     * @param string $name
+     * @param string $name : Nom du groupe
+     * @return int Identifiant prestashop du groupe
      */
     protected function _getCustomerGroupId($name) {
 
@@ -260,9 +293,9 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 $this->fail('Erreur creation du groupe ' . $e->getMessage());
                 exit();
             }
-            return $newgroup->id;
+            return (int)$newgroup->id;
         } else {
-            return $group['id_group'];
+            return (int)$group['id_group'];
         }
     }
 
@@ -285,7 +318,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         $groups = Group::getGroups(1);
         foreach ($groups as $group) {
             if ($group['id_group'] > 3) {
-                $groupModel = new GroupCore($group['id_group']);
+                $groupModel = new Group($group['id_group']);
                 try {
                     $groupModel->delete();
                 } catch (Exception $e) {
