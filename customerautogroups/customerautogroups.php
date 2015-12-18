@@ -32,7 +32,7 @@ class customerautogroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.2.0';
+        $this->version       = '0.2.1';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -162,7 +162,7 @@ class customerautogroups extends Module
 
         $customerGroups = array();
         foreach ($rules as $rule) {
-
+            
             //Traitement des règles de type "Client"
             if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_CUSTOMER) {
                 $obj = $customer;
@@ -189,7 +189,7 @@ class customerautogroups extends Module
             $ruleApplied = false;
             $defaultGroup = false;
             $cleanGroups = false;
-
+            
             switch ($rule['condition_operator']) {
 
                 case '=':
@@ -220,20 +220,20 @@ class customerautogroups extends Module
             if ($ruleApplied) {
                 //echo sprintf( $this->l('Rule %d applied for customer'),$rule['id_rule']).'<br />';
                 $customerGroups[] = $rule['id_group'];
-            }
 
-            //Si la règle doit être la dernière à être traitée, on sors de la boucle
-            if ($rule['stop_processing'] == 1) {
-                if ( $rule['default_group'] == 1) {
-                    $defaultGroup = $rule['id_group'];
+                //Si la règle doit être la dernière à être traitée, on sors de la boucle
+                if ($rule['stop_processing'] == 1) {
+                    if ($rule['default_group'] == 1) {
+                        $defaultGroup = $rule['id_group'];
+                    }
+                    if ($rule['clean_groups'] == 1) {
+                        $cleanGroups = true;
+                    }
+                    break;
                 }
-                if ( $rule['clean_groups'] == 1) {
-                    $cleanGroups = true;
-                }
-                break;
             }
+            
         }
-
         //Ajout du client aux groupes nécessaires
         if ( sizeof($customerGroups)) {
 
