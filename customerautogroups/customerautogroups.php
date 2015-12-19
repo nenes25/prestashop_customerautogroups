@@ -252,8 +252,14 @@ class customerautogroups extends Module
                 $customer->cleanGroups();
 
             //Application du groupe par défaut
-            if ( $defaultGroup )
+            if ( $defaultGroup ) {
                 $customer->id_default_group = $defaultGroup;
+                try {
+                    $customer->save();
+                } catch (PrestaShopException $e) {
+                    echo $e->getMessage();
+                }
+            }
 
             //Suppression des doublons
             $customerGroups = array_unique($customerGroups);
