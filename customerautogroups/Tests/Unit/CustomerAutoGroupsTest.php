@@ -58,18 +58,20 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
             return;
         }
 
-        //La règle est enregistrée, on vérifie que les champs sont ok
-        $this->assertEquals($ruleModel->name[1], $rule['name']);
-        $this->assertEquals($ruleModel->description[1], $rule['description']);
-        $this->assertEquals($ruleModel->condition_type, $rule['condition_type']);
-        $this->assertEquals($ruleModel->condition_field, $rule['condition_field']);
-        $this->assertEquals($ruleModel->condition_operator, $rule['condition_operator']);
-        $this->assertEquals($ruleModel->condition_value, $rule['condition_value']);
-        $this->assertEquals($ruleModel->priority, $rule['priority']);
-        $this->assertEquals($ruleModel->active, $rule['active']);
-        $this->assertEquals($ruleModel->stop_processing, $rule['stop_processing']);
-        $this->assertEquals($ruleModel->default_group, $rule['default_group']);
-        $this->assertEquals($ruleModel->clean_groups, $rule['clean_groups']);
+        //La règle est enregistrée, on la charge depuis la bdd et on vérifie que les champs sont ok
+        $ruleModelDb = new AutoGroupRule($ruleModel->id);
+        
+        $this->assertEquals($ruleModelDb->name[1], $rule['name']);
+        $this->assertEquals($ruleModelDb->description[1], $rule['description']);
+        $this->assertEquals($ruleModelDb->condition_type, $rule['condition_type']);
+        $this->assertEquals($ruleModelDb->condition_field, $rule['condition_field']);
+        $this->assertEquals($ruleModelDb->condition_operator, $rule['condition_operator']);
+        $this->assertEquals($ruleModelDb->condition_value, $rule['condition_value']);
+        $this->assertEquals($ruleModelDb->priority, $rule['priority']);
+        $this->assertEquals($ruleModelDb->active, $rule['active']);
+        $this->assertEquals($ruleModelDb->stop_processing, $rule['stop_processing']);
+        $this->assertEquals($ruleModelDb->default_group, $rule['default_group']);
+        $this->assertEquals($ruleModelDb->clean_groups, $rule['clean_groups']);
     }
 
     /**
@@ -134,9 +136,12 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         
         //Création du nouveau client ( et adresse si nécessaire )
         $customer = $this->_createCustomer($customerDatas);
-        
+          
         //Exécution du hook dans lequel les données sont traitées
         HookCore::exec('actionCustomerAccountAdd', array('newCustomer' => $customer));
+        
+        //On recharge les informations du client depuis la bdd (après le passage dans le hook )
+        $customerDb = new Customer($customer->id);
         
         //On récupère les identifiants des groupes dans lequel le client doit etre présent
         $customerGroups = array();
@@ -151,7 +156,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         }
         
         //On récupère les groupes du clients
-        $groups = $customer->getGroups();
+        $groups = $customerDb->getGroups();
         
         //On s'assure que les groupes du client correspondent à ceux choisis
         $this->assertEquals($groups,$customerGroups);
@@ -163,7 +168,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
             else
                 $defaultGroup = $this->_getCustomerGroupId($group);
             
-            $this->assertEquals($customer->id_default_group,$defaultGroup);
+            $this->assertEquals($defaultGroup,$customerDb->id_default_group);
         }
     }
     
