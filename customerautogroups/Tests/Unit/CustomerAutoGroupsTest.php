@@ -5,8 +5,13 @@
  *
  * @author hhennes <contact@h-hennes.fr>
  */
-//@ToDo : Fixé en dur pour tests locaux, rendre dynamique
-include_once '/var/www/public/prestashop/prestashop_1-6-1-1/config/config.inc.php';
+
+//@ToDo : Pour l'instant le path d'inclusion est déterminé par le chemin d'exécution
+//Il faudra optimiser ce point, car les tests doivent être lancés de la manière suivante
+// phpunit Tests/Unit/CustomerAutoGroupsTest.php à la racine du dossier du module
+
+$exec_dir = str_replace('modules/customerautogroups','',trim(shell_exec('pwd')));
+include_once $exec_dir.'config/config.inc.php';
 include_once _PS_MODULE_DIR_ . '/customerautogroups/classes/AutoGroupRule.php';
 
 class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
@@ -80,7 +85,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     public function getAutoGroupRules() {
 
         return array(
-            /*array('rule_us' => array(
+            array('rule_us' => array(
                     'name' => 'US group auto', // Nom de la règle
                     'description' => 'Auto groups for us customers', //Description de la règle
                     'condition_type' => 2, // Type de condition 1 customer / 2 addresse
@@ -121,10 +126,10 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                     'stop_processing' => 0,
                     'default_group' => 0,
                     'clean_groups' => 0,
-                )),*/
+                )),
            array('gmail_users' => array(
                     'name' => 'gmail user',
-                    'description' => 'Auto groups for male users',
+                    'description' => 'Test for like condition',
                     'condition_type' => 1, //1 customer , 2 addresse
                     'condition_field' => 'email',
                     'condition_operator' => 'LIKE %',
@@ -192,7 +197,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     public function getCustomers(){
 
         return array(
-            /*array('customer_us' => array(
+            array('customer_us' => array(
                 'id_gender' => 1,
                 'firstname' => 'herve',
                 'lastname' => 'herve US',
@@ -248,12 +253,12 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 'address_phone' => '0836656565',
                 'expected_groups' => array('default','male_users'),
                 'default_group' => 'default',
-            )),*/
+            )),
             array('customer_gmail' => array(
                 'id_gender' => 2,
                 'firstname' => 'herve',
-                'lastname' => 'male',
-                'email' => sprintf("testmale%s@gmail.com",time()),
+                'lastname' => 'gmail',
+                'email' => sprintf("test%s@gmail.com",time()),
                 'password' => 'test2015',
                 'add_address' => 1,
                 'address_firstname' => 'herve',
