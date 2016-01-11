@@ -32,7 +32,7 @@ class customerautogroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.2.1';
+        $this->version       = '0.3.0';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -214,6 +214,11 @@ class customerautogroups extends Module
 
                 case '<=':
                     if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
+                    break;
+                    
+                case 'LIKE %':
+                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) )
+                        $ruleApplied = true;
                     break;
             }
 

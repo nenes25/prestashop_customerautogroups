@@ -166,6 +166,7 @@ class RulesController extends ModuleAdminController
             array('id' => '>=', 'value' => '>='),
             array('id' => '<', 'value' => '<'),
             array('id' => '<=', 'value' => '<='),
+            array('id' => 'LIKE %', 'value' => 'LIKE %'),
         );
 
         //Avec Prestashop < 1.6 le type switch n'existe pas il faut le remplacer par un radio
