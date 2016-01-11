@@ -162,7 +162,7 @@ class customerautogroups extends Module
 
         $customerGroups = array();
         foreach ($rules as $rule) {
-            
+
             //Traitement des règles de type "Client"
             if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_CUSTOMER) {
                 $obj = $customer;
@@ -175,13 +175,13 @@ class customerautogroups extends Module
             }
             //Type Inconnu : non traité
             else {
-                //echo $this->l('Error : rule type unknow');
+                echo $this->l('Error : rule type unknow');
                 continue;
             }
 
             //Il faut que la propriété de l'objet existe
             if (!property_exists($obj, $rule['condition_field'])) {
-                //echo sprintf($this->l('Error : Unknow proprerty %s for class %'), $rule['condition_field'], get_class($obj));
+                echo sprintf($this->l('Error : Unknow proprerty %s for class %'), $rule['condition_field'], get_class($obj));
                 continue;
             }
 
@@ -189,7 +189,7 @@ class customerautogroups extends Module
             $ruleApplied = false;
             $defaultGroup = false;
             $cleanGroups = false;
-            
+
             switch ($rule['condition_operator']) {
 
                 case '=':
@@ -215,6 +215,16 @@ class customerautogroups extends Module
                 case '<=':
                     if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
                     break;
+
+                case 'LIKE %':
+                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) )
+                        $ruleApplied = true;
+                    break;
+
+                default:
+                    echo 'Erreur pas de cas matché';
+                    break;
+
             }
 
             if ($ruleApplied) {
@@ -232,7 +242,7 @@ class customerautogroups extends Module
                     break;
                 }
             }
-            
+
         }
         //Ajout du client aux groupes nécessaires
         if ( sizeof($customerGroups)) {

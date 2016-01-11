@@ -60,7 +60,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
 
         //La règle est enregistrée, on la charge depuis la bdd et on vérifie que les champs sont ok
         $ruleModelDb = new AutoGroupRule($ruleModel->id);
-        
+
         $this->assertEquals($ruleModelDb->name[1], $rule['name']);
         $this->assertEquals($ruleModelDb->description[1], $rule['description']);
         $this->assertEquals($ruleModelDb->condition_type, $rule['condition_type']);
@@ -80,7 +80,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     public function getAutoGroupRules() {
 
         return array(
-            array('rule_us' => array(
+            /*array('rule_us' => array(
                     'name' => 'US group auto', // Nom de la règle
                     'description' => 'Auto groups for us customers', //Description de la règle
                     'condition_type' => 2, // Type de condition 1 customer / 2 addresse
@@ -121,28 +121,41 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                     'stop_processing' => 0,
                     'default_group' => 0,
                     'clean_groups' => 0,
-                )),
-            
-        );
+                )),*/
+           array('gmail_users' => array(
+                    'name' => 'gmail user',
+                    'description' => 'Auto groups for male users',
+                    'condition_type' => 1, //1 customer , 2 addresse
+                    'condition_field' => 'email',
+                    'condition_operator' => 'LIKE %',
+                    'condition_value' => '@gmail.com',
+                    'customer_group_name' => 'gmail_users',
+                    'priority' => 1,
+                    'active' => 1,
+                    'stop_processing' => 0,
+                    'default_group' => 0,
+                    'clean_groups' => 0,
+                ))
+            );
     }
 
-    
+
     /**
      * Tests de la bonne assignation
      * @dataProvider getCustomers
-     * @param array $customerDatas 
+     * @param array $customerDatas
      */
     public function testAutoAssignCustomerToGroup($customerDatas) {
-        
+
         //Création du nouveau client ( et adresse si nécessaire )
         $customer = $this->_createCustomer($customerDatas);
-          
+
         //Exécution du hook dans lequel les données sont traitées
         HookCore::exec('actionCustomerAccountAdd', array('newCustomer' => $customer));
-        
+
         //On recharge les informations du client depuis la bdd (après le passage dans le hook )
         $customerDb = new Customer($customer->id);
-        
+
         //On récupère les identifiants des groupes dans lequel le client doit etre présent
         $customerGroups = array();
         foreach( $customerDatas['expected_groups'] as $group ) {
@@ -154,32 +167,32 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 $customerGroups[]= $id_group;
             }
         }
-        
+
         //On récupère les groupes du clients
         $groups = $customerDb->getGroups();
-        
+
         //On s'assure que les groupes du client correspondent à ceux choisis
         $this->assertEquals($groups,$customerGroups);
-        
+
         //Si on veut verifier le groupe par défaut du client
         if (array_key_exists('default_group', $customerDatas)) {
             if ( $customerDatas['default_group'] == 'default')
                 $defaultGroup = 3;
             else
                 $defaultGroup = $this->_getCustomerGroupId($group);
-            
+
             $this->assertEquals($defaultGroup,$customerDb->id_default_group);
         }
     }
-    
+
     /**
      * Dataprovider des données de test pour les clients
      * (Statique)
      */
     public function getCustomers(){
-        
+
         return array(
-            array('customer_us' => array(
+            /*array('customer_us' => array(
                 'id_gender' => 1,
                 'firstname' => 'herve',
                 'lastname' => 'herve US',
@@ -235,11 +248,30 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 'address_phone' => '0836656565',
                 'expected_groups' => array('default','male_users'),
                 'default_group' => 'default',
+            )),*/
+            array('customer_gmail' => array(
+                'id_gender' => 2,
+                'firstname' => 'herve',
+                'lastname' => 'male',
+                'email' => sprintf("testmale%s@gmail.com",time()),
+                'password' => 'test2015',
+                'add_address' => 1,
+                'address_firstname' => 'herve',
+                'address_lastname' => 'herve',
+                'address_address1' => '16 rue des tests',
+                'address_address2' => '',
+                'address_postcode' => '67000',
+                'address_city' => 'Strasbourg',
+                'address_id_country' => 15, //Pas france , ni us
+                'address_id_state' => 0,
+                'address_phone' => '0836656565',
+                'expected_groups' => array('default','gmail_users'),
+                'default_group' => 'default',
             ))
         );
-        
+
     }
-    
+
     /**
      * Création d'un client
      * @param array $datas
@@ -283,7 +315,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                 echo $e->getMessage();
             }
         }
-        
+
         return $customer;
     }
 
@@ -328,7 +360,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     }
 
 
-    
+
     /**
      * Suppression de tous les groupes clients non standards
      */
@@ -346,7 +378,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
             }
         }
     }
-    
+
     /**
      * Suppression de toutes les règles autoGroups
      */
