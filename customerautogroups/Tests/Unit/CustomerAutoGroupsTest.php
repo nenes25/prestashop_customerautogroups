@@ -15,7 +15,13 @@ include_once $exec_dir.'config/config.inc.php';
 include_once _PS_MODULE_DIR_ . '/customerautogroups/classes/AutoGroupRule.php';
 
 class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
-
+    
+    //Nom du module
+    protected $_moduleName = 'contactformfields';
+    
+    //Tab admin du module
+    protected $_moduleTabName = 'Rules';
+    
     /**
      * Avant l'exécution de la classe
      * Mise à jour de la config + suppression des données existantes
@@ -25,6 +31,38 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         self::cleanAllCustomCustomersGroup();
         self::cleanAutoGroupsRules();
     }
+    
+    /**
+     * Vérification que le module est installé (via la méthode prestashop)
+     * @group customerautogroups_install
+     */
+    public function testModuleIsInstalled() {
+        $this->assertTrue(Module::isInstalled($this->_moduleName));
+    }
+    
+    /**
+     * On vérifie que le module est bien greffé sur les nouveaux hooks
+     * @depends testModuleIsInstalled
+     * @group customerautogroups_install
+     */
+    public function testModuleIsHooked() {
+        
+        //Instanciation du module
+        $moduleInstance = ModuleCore::getInstanceByName($this->_moduleName);
+        
+        $this->assertNotFalse($moduleInstance->isRegisteredInHook('actionCustomerAccountAdd'));
+    }
+    
+    /**
+     * Vérifie que la tab du back office est bien installée
+     * @group eicmslinks_install
+     */
+    public function testInstallTab(){
+        $id_tab = Tab::getIdFromClassName($this->_moduleTabName);
+        $this->assertNotFalse($id_tab);
+    }
+    
+    //@ToDO : Vérfier la bonne présence des bases de données
 
     /**
      * Test de creation d'une règle
