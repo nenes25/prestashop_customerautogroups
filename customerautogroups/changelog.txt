@@ -4,3 +4,4 @@ V 0.2.0 - 2015-12-07 : Ajout de la possibilité de definir le groupe par défaut
                        New fonctionnalities allows you to define customer default group, and to delete others groups ( for stop processing rules )
 V 0.2.1 - 2015-12-18 : Correction dans l'application des règles + maj readme // Rules apply correction
 V 0.3.0 - 2016-01-11 : Nouvelles conditions de filtres (Like)
+V 0.4.0 - 2016-04-23 : Nouvelle fonctionnalité : conditions de commandes, exécutées après le passage d'une commande.

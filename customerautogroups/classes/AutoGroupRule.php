@@ -29,6 +29,7 @@ class AutoGroupRule extends ObjectModel
     /** Différents types de règles */
     const RULE_TYPE_CUSTOMER = 1;
     const RULE_TYPE_ADDRESS  = 2;
+    const RULE_TYPE_ORDER = 3;
 
     public $id;
     public $name;
@@ -68,6 +69,6 @@ class AutoGroupRule extends ObjectModel
             'description' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'),
         ),
     );
-
+    
 }
 ?>

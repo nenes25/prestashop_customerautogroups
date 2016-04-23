@@ -46,11 +46,15 @@ class customerautogroups extends Module
      */
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd'))
+        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd') || !$this->registerHook('actionValidateOrder') )
         {
             return false;
         }
-
+        
+        //Création d'une configuration
+        /*if ( !Configuration::set('CUSTOMER_AUTOGROUPS_ORDER_RULES',0))
+                return false;*/
+            
         //Création d'une tab prestashop
         $tab             = new Tab();
         $tab->class_name = 'Rules';
@@ -121,6 +125,8 @@ class customerautogroups extends Module
             $tab = new Tab($id_tab);
             $tab->delete();
         }
+        
+        Configuration::deleteByName('CUSTOMER_AUTOGROUPS_ORDER_RULES');
 
         Db::getInstance("DROP TABLE IF EXISTS `"._DB_PREFIX_."autogroup_rule`");
         Db::getInstance("DROP TABLE IF EXISTS `"._DB_PREFIX_."autogroup_rule_lang`");
@@ -134,14 +140,14 @@ class customerautogroups extends Module
      */
     public function hookActionCustomerAccountAdd($params)
     {
-        $this->_processGroupRules($params['newCustomer']);
+        $this->_processGroupRulesAccount($params['newCustomer']);
     }
 
     /**
      * Traitement des règles
      * @param Customer $customer
      */
-    protected function _processGroupRules(Customer $customer)
+    protected function _processGroupRulesAccount(Customer $customer)
     {
 
         //Inclusion de la classe des règles
@@ -152,9 +158,9 @@ class customerautogroups extends Module
 
         //Si le client n'a pas d'adresse on ne peut pas traiter les règles liées aux données d'adresses.
         if (!$customer_addresses) {
-            $sqlCond = ' AND condition_type = 1 ';
+            $sqlCond = ' AND condition_type ='.AutoGroupRule::RULE_TYPE_CUSTOMER;
         } else {
-            $sqlCond = '';
+            $sqlCond = 'AND condition_type IN ( '.AutoGroupRule::RULE_TYPE_CUSTOMER.' , '.AutoGroupRule::RULE_TYPE_ADDRESS.')';
         }
 
         //Récupération des règles applicables au client
@@ -264,4 +270,26 @@ class customerautogroups extends Module
         }
 
     }
+
+    
+    /**
+     * Hook exécuté après la validation d'une commande
+     * @param type $params
+     */
+    public function hookActionValidateOrder($params) {
+        
+        //Si l'option n'est pas activée on ne fait rien
+        /*if ( ConfigurationCore::get('CUSTOMER_AUTOGROUPS_ORDER_RULES') != 1)
+            return;*/
+        
+        //Si c'est un guest inutile de traiter les règles
+        
+        //Inclusion de la classe des règles
+        include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRule.php';
+        
+        $ruleProcessor = new AutoGroupRuleProcessor($params['customer']);
+        $ruleProcessor->processOrderRules($params);
+        
+    }
+    
 }

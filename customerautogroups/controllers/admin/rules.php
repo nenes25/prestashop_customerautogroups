@@ -24,6 +24,7 @@
  *  http://www.h-hennes.fr/blog/
  */
 include_once dirname(__FILE__).'/../../classes/AutoGroupRule.php';
+include_once dirname(__FILE__).'/../../classes/OrderConditions.php';
 
 class RulesController extends ModuleAdminController
 {
@@ -37,9 +38,16 @@ class RulesController extends ModuleAdminController
     //Champs addresse exclus de la condition
     protected $_addressExcludedFields = array('force_id', 'id_customer', 'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted', 'definition', 'date_add',
         'date_upd');
-
+    
     //Champs adresse
     protected $addressFields = array();
+    
+    //Champs order exclus de la condition
+    protected $_orderExcludedFields = array('force_id','id','id_customer','id_shop','id_currency','id_lang','secure_key','current_state','id_cart','id_address_delivery','id_address_invoice','id_shop_group',
+        'invoice_number','delivery_numbert','definition','date_add','date_upd');
+    
+    //Champs order
+    protected $orderFields = array();
 
     //Données du champ condition_field
     protected $_conditionFieldDatas;
@@ -111,6 +119,7 @@ class RulesController extends ModuleAdminController
         $this->conditionsType = array(
             array('id' => AutoGroupRule::RULE_TYPE_CUSTOMER, 'value' => 'Customer'),
             array('id' => AutoGroupRule::RULE_TYPE_ADDRESS, 'value' => 'Address'),
+            array('id' => AutoGroupRule::RULE_TYPE_ORDER, 'value' => 'Order'),
         );
 
         //Liste des champs disponibles pour la classe Customer
@@ -129,14 +138,24 @@ class RulesController extends ModuleAdminController
                 $this->addressFields[] = array('id' => $key, 'value' => $key);
             }
         }
+        
+        //Liste des champs disponibles pour les Commandes
+        $oFields = get_class_vars('Order');
+        foreach ($oFields as $key => $value) {
+         if (!in_array($key, $this->_orderExcludedFields)) {
+                $this->orderFields[] = array('id' => $key, 'value' => $key);
+            }
+        }
 
         //Gestion de l'affichage du champ "condition_field" pour les règles déjà existantes
         if ( Tools::getValue('id_rule')) {
             $rule = new AutoGroupRule(Tools::getValue('id_rule'));
             if ( $rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER )
                 $this->_conditionFieldDatas = $this->customerFields;
-            else
+            elseif ( $rule->condition_type == AutoGroupRule::RULE_TYPE_ADDRESS )
                 $this->_conditionFieldDatas = $this->addressFields;
+            else
+                $this->_conditionFieldDatas = $this->orderFields;
         }
         else {
             $this->_conditionFieldDatas = $this->customerFields;
@@ -354,8 +373,11 @@ class RulesController extends ModuleAdminController
         if ( Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_CUSTOMER ) {
             $fields = $this->customerFields;
         }
-        else {
+        if ( Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_ADDRESS ) {
             $fields = $this->addressFields;
+        }
+        else {
+            $fields = $this->orderFields;
         }
 
         foreach ( $fields as $field ) {
