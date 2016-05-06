@@ -23,34 +23,23 @@
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
+//@ToDO: Rajouter les classes dans l'autoload
 include_once dirname(__FILE__).'/../../classes/AutoGroupRule.php';
-include_once dirname(__FILE__).'/../../classes/OrderConditions.php';
+include_once dirname(__FILE__).'/../../classes/AutoGroupRuleCondition.php';
+include_once dirname(__FILE__).'/../../classes/AutoGroupRuleConditionCustomer.php';
+include_once dirname(__FILE__).'/../../classes/AutoGroupRuleConditionAddress.php';
+include_once dirname(__FILE__).'/../../classes/AutoGroupRuleConditionOrder.php';
 
 class RulesController extends ModuleAdminController
 {
-    //Champs clients exclus de la condition
-    protected $_customerExcludedFields = array('id', 'secure_key', 'ip_registration_newsletter', 'id_default_group', 'last_passwd_gen', 'last_passwd_gen',
-        'passwd', 'definition', 'date_add', 'date_upd');
-
-    //Champs clients
-    protected $customerFields;
-
-    //Champs addresse exclus de la condition
-    protected $_addressExcludedFields = array('force_id', 'id_customer', 'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted', 'definition', 'date_add',
-        'date_upd');
-    
-    //Champs adresse
-    protected $addressFields = array();
-    
-    //Champs order exclus de la condition
-    protected $_orderExcludedFields = array('force_id','id','id_customer','id_shop','id_currency','id_lang','secure_key','current_state','id_cart','id_address_delivery','id_address_invoice','id_shop_group',
-        'invoice_number','delivery_numbert','definition','date_add','date_upd');
-    
-    //Champs order
-    protected $orderFields = array();
-
     //Données du champ condition_field
     protected $_conditionFieldDatas;
+
+    //Opérateurs de comparaison
+    protected $_operatorsList;
+
+    //Tableau global des rules ( actualisé automatiquement, possibilité d'ajout de conditions via le hook )
+    protected $_rulesDatas = array();
 
     public function __construct()
     {
@@ -117,48 +106,42 @@ class RulesController extends ModuleAdminController
     {
         //Liste des cas de conditions
         $this->conditionsType = array(
-            array('id' => AutoGroupRule::RULE_TYPE_CUSTOMER, 'value' => 'Customer'),
-            array('id' => AutoGroupRule::RULE_TYPE_ADDRESS, 'value' => 'Address'),
-            array('id' => AutoGroupRule::RULE_TYPE_ORDER, 'value' => 'Order'),
+            array('id' => 'customer', 'value' => 'Customer'),
+            array('id' => 'address', 'value' => 'Address'),
+            array('id' => 'order', 'value' => 'Order'),
         );
 
         //Liste des champs disponibles pour la classe Customer
-        $fields         = get_class_vars('Customer');
-        $this->customerFields = array();
-        foreach ($fields as $key => $value) {
-            if (!in_array($key, $this->_customerExcludedFields)) {
-                $this->customerFields[] = array('id' => $key, 'value' => $key);
-            }
-        }
+        $conditionsCustomer = new AutoGroupRuleConditionCustomer();
+        $this->_rulesDatas['customer'] = array(
+            'fields' => $conditionsCustomer->getRuleFields(),
+            'conditions' => $conditionsCustomer->getOperatorList(),
+        );
 
-        //Liste des champs disponibles pour la classe Customer
-        $afields       = get_class_vars('Address');
-        foreach ($afields as $key => $value) {
-            if (!in_array($key, $this->_addressExcludedFields)) {
-                $this->addressFields[] = array('id' => $key, 'value' => $key);
-            }
-        }
-        
-        //Liste des champs disponibles pour les Commandes
-        $oFields = get_class_vars('Order');
-        foreach ($oFields as $key => $value) {
-         if (!in_array($key, $this->_orderExcludedFields)) {
-                $this->orderFields[] = array('id' => $key, 'value' => $key);
-            }
-        }
+        //Liste des champs disponibles pour la classe Address
+        $conditionsAddress = new AutoGroupRuleConditionAddress();
+        $this->_rulesDatas['address'] = array(
+            'fields' => $conditionsAddress->getRuleFields(),
+            'conditions' => $conditionsAddress->getOperatorList(),
+        );
 
-        //Gestion de l'affichage du champ "condition_field" pour les règles déjà existantes
+        //Liste des champs disponibles pour la classe Order
+        $conditionsOrder = new AutoGroupRuleConditionOrder();
+        $this->_rulesDatas['order'] = array(
+            'fields' => $conditionsOrder->getRuleFields(),
+            'conditions' => $conditionsOrder->getOperatorList(),
+        );
+
+        //Gestion de l'affichage des champ "condition_field" et "condition_operator" pour les règles déjà existantes
         if ( Tools::getValue('id_rule')) {
+
             $rule = new AutoGroupRule(Tools::getValue('id_rule'));
-            if ( $rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER )
-                $this->_conditionFieldDatas = $this->customerFields;
-            elseif ( $rule->condition_type == AutoGroupRule::RULE_TYPE_ADDRESS )
-                $this->_conditionFieldDatas = $this->addressFields;
-            else
-                $this->_conditionFieldDatas = $this->orderFields;
+            $this->_conditionFieldDatas = $this->_rulesDatas[$rule->condition_type]['fields'];
+            $this->_operatorsList = $this->_rulesDatas[$rule->condition_type]['conditions'];
         }
         else {
-            $this->_conditionFieldDatas = $this->customerFields;
+            $this->_conditionFieldDatas = $this->_rulesDatas['customer']['fields'];
+            $this->_operatorsList = $this->_rulesDatas['customer']['conditions'];
         }
     }
 
@@ -176,17 +159,6 @@ class RulesController extends ModuleAdminController
 
         //Liste des groupes clients
         $customerGroups = Group::getGroups($this->context->language->id);
-
-        //Liste des opérateurs
-        $operatorsList = array(
-            array('id' => '=', 'value' => '='),
-            array('id' => '!=', 'value' => '!='),
-            array('id' => '>', 'value' => '>'),
-            array('id' => '>=', 'value' => '>='),
-            array('id' => '<', 'value' => '<'),
-            array('id' => '<=', 'value' => '<='),
-            array('id' => 'LIKE %', 'value' => 'LIKE %'),
-        );
 
         //Avec Prestashop < 1.6 le type switch n'existe pas il faut le remplacer par un radio
         if ( _PS_VERSION_ < '1.6') {
@@ -243,13 +215,15 @@ class RulesController extends ModuleAdminController
                         'name' => 'value',
                     ),
                 ),
+                //Les règles de type Commande entraine le chagement de ce champs
                 array(
                     'type' => 'select',
                     'label' => $this->l('Condition Operator'),
                     'name' => 'condition_operator',
+                    'class' => 'condition_operator',
                     'required' => true,
                     'options' => array(
-                        'query' => $operatorsList,
+                        'query' => $this->_operatorsList,
                         'id' => 'id',
                         'name' => 'value',
                     )
@@ -364,25 +338,32 @@ class RulesController extends ModuleAdminController
     }
 
     /**
-     * Mise à jour ajax des champs des règles en fonction du type
+     * Mise à jour ajax des champs
      */
-    public function displayAjaxUpdateConditionTypeSelect(){
+    public function displayAjaxUpdateSelects(){
 
         $this->_initForm();
 
-        if ( Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_CUSTOMER ) {
-            $fields = $this->customerFields;
-        }
-        if ( Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_ADDRESS ) {
-            $fields = $this->addressFields;
-        }
-        else {
-            $fields = $this->orderFields;
+        $type = Tools::getValue('condition_type','customer');
+
+        $fields = $this->_rulesDatas[$type]['fields'];
+        $fieldsHtml = '';
+        foreach ( $fields as $field ) {
+            $fieldsHtml .='<option value="'.$field['id'].'">'.$field['value'].'</option>';
         }
 
-        foreach ( $fields as $field ) {
-            echo '<option value="'.$field['id'].'">'.$field['value'].'</option>';
+        $operators = $this->_rulesDatas[$type]['conditions'];
+        $operatorHtml = '';
+        foreach ( $operators as $operator ) {
+            $operatorHtml .='<option value="'.$operator['id'].'">'.$operator['value'].'</option>';
         }
+
+        $return = array(
+            'fields' => $fieldsHtml,
+            'operators' => $operatorHtml
+        );
+
+        echo json_encode($return);
     }
 }
 ?>

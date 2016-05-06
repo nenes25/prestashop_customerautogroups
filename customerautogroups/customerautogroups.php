@@ -32,7 +32,7 @@ class customerautogroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.3.0';
+        $this->version       = '0.4.0';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -50,11 +50,11 @@ class customerautogroups extends Module
         {
             return false;
         }
-        
+
         //Création d'une configuration
         /*if ( !Configuration::set('CUSTOMER_AUTOGROUPS_ORDER_RULES',0))
                 return false;*/
-            
+
         //Création d'une tab prestashop
         $tab             = new Tab();
         $tab->class_name = 'Rules';
@@ -85,7 +85,7 @@ class customerautogroups extends Module
     {
         $sqlRule = "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."autogroup_rule` (
                     `id_rule` int(11) NOT NULL AUTO_INCREMENT,
-                    `condition_type` tinyint(2) NOT NULL,
+                    `condition_type` varchar(30) NOT NULL,
                     `condition_field` varchar(255) NOT NULL,
                     `condition_operator` varchar(10) NOT NULL,
                     `condition_value` varchar(255) NOT NULL,
@@ -125,7 +125,7 @@ class customerautogroups extends Module
             $tab = new Tab($id_tab);
             $tab->delete();
         }
-        
+
         Configuration::deleteByName('CUSTOMER_AUTOGROUPS_ORDER_RULES');
 
         Db::getInstance("DROP TABLE IF EXISTS `"._DB_PREFIX_."autogroup_rule`");
@@ -146,6 +146,7 @@ class customerautogroups extends Module
     /**
      * Traitement des règles
      * @param Customer $customer
+     * Pour les comptes clients on conserve l'ancien fonctionnement ( pour l'instant )
      */
     protected function _processGroupRulesAccount(Customer $customer)
     {
@@ -158,9 +159,9 @@ class customerautogroups extends Module
 
         //Si le client n'a pas d'adresse on ne peut pas traiter les règles liées aux données d'adresses.
         if (!$customer_addresses) {
-            $sqlCond = ' AND condition_type ='.AutoGroupRule::RULE_TYPE_CUSTOMER;
+            $sqlCond = ' AND condition_type ="customer"';
         } else {
-            $sqlCond = 'AND condition_type IN ( '.AutoGroupRule::RULE_TYPE_CUSTOMER.' , '.AutoGroupRule::RULE_TYPE_ADDRESS.')';
+            $sqlCond = 'AND condition_type IN ( "customer" , "address")';
         }
 
         //Récupération des règles applicables au client
@@ -168,13 +169,13 @@ class customerautogroups extends Module
 
         $customerGroups = array();
         foreach ($rules as $rule) {
-            
+
             //Traitement des règles de type "Client"
-            if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_CUSTOMER) {
+            if ($rule['condition_type'] == "customer") {
                 $obj = $customer;
             }
             //Traitement des règles de type Adresse
-            else if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS ) {
+            else if ($rule['condition_type'] == "address" ) {
                 //Normalement vu que le client vient d'être créé il ne peut avoir qu'une adresse
                 $id_address = Db::getInstance()->getValue("SELECT id_address FROM "._DB_PREFIX_."address WHERE id_customer=".$customer->id);
                 $obj        = new Address($id_address);
@@ -195,7 +196,7 @@ class customerautogroups extends Module
             $ruleApplied = false;
             $defaultGroup = false;
             $cleanGroups = false;
-            
+
             switch ($rule['condition_operator']) {
 
                 case '=':
@@ -221,7 +222,7 @@ class customerautogroups extends Module
                 case '<=':
                     if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
                     break;
-                    
+
                 case 'LIKE %':
                     if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) )
                         $ruleApplied = true;
@@ -243,7 +244,7 @@ class customerautogroups extends Module
                     break;
                 }
             }
-            
+
         }
         //Ajout du client aux groupes nécessaires
         if ( sizeof($customerGroups)) {
@@ -271,25 +272,23 @@ class customerautogroups extends Module
 
     }
 
-    
+
     /**
      * Hook exécuté après la validation d'une commande
      * @param type $params
      */
     public function hookActionValidateOrder($params) {
-        
+
         //Si l'option n'est pas activée on ne fait rien
         /*if ( ConfigurationCore::get('CUSTOMER_AUTOGROUPS_ORDER_RULES') != 1)
             return;*/
-        
+
         //Si c'est un guest inutile de traiter les règles
-        
+
         //Inclusion de la classe des règles
         include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRule.php';
-        
         $ruleProcessor = new AutoGroupRuleProcessor($params['customer']);
         $ruleProcessor->processOrderRules($params);
-        
     }
-    
+
 }

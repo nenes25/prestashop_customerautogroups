@@ -25,15 +25,15 @@
  *  http://www.h-hennes.fr/blog/
  */
 
-class AutoGroupRuleProcessor {
-    
-   
+class AutoGroupRuleOrderProcessor {
+
+
     protected $_rules = array();
-    
+
     /** Instance du client */
     protected $_customer;
-    
-    
+
+
     /**
      * Instanciation de la classe avec le client
      * @param Customer $customer Instance du client à traiter
@@ -41,31 +41,31 @@ class AutoGroupRuleProcessor {
     public function __construct(Customer $customer) {
         $this->_customer = $customer;
     }
-    
+
     /**
      * Traitement des règles liées aux commandes
      * @param array $params
      */
     public function processOrderRules($params) {
-                
-        $order = $params['order'];       
-        
+
+        $order = $params['order'];
+
         //Récupération des règles applicables à la commande
         $this->_getRules(AutoGroupRule::RULE_TYPE_ORDER);
-        
+
         $customerGroups = array();
         $defaultGroup = false;
         $cleanGroups = false;
-        
+
         foreach ( $this->_rules as $rule ) {
-            
+
             //Il faut que la propriété de l'objet existe
             if (!property_exists($order, $rule['condition_field'])) {
                  continue;
             }
-            
-            if ( $this->_ruleMatch($rule, $order)) {
-                
+
+            if ( $this->_ruleMatch($rule, $order ,'orders')) {
+
                 $customerGroups[] = $rule['id_group'];
 
                 //Si la règle doit être la dernière à être traitée, on sors de la boucle
@@ -79,36 +79,45 @@ class AutoGroupRuleProcessor {
                     break;
                 }
             }
-            
+
         }
         //Ajout du client aux groupes nécessaires
         if ( sizeof($customerGroups)) {
            $this->_addCustomerGroups($customerGroups, $cleanGroups, $defaultGroup);
         }
-        
+
     }
-    
+
     /**
      * Récupérations des règles applicables
      * @param string || array $types
      */
     protected function _getRules($type){
-        
+
         $rules = Db::getInstance()->ExecuteS("SELECT * "
                 . "FROM "._DB_PREFIX_."autogroup_rule "
                 . "WHERE active=1 AND condition_type IN (". implode(',',$type) .")"
                 . "ORDER BY priority");
-  
+
         $this->_rules = $rules;
     }
-    
+
     /**
      * Vérifie si la rule matche la condition
      * @param array $rule
      * @param Object $obj
+     * @param string $type
      */
-    protected function _ruleMatch($rule,$obj){
-        
+    protected function _ruleMatch($rule,$obj,$type = ''){
+
+        //Appel de la classe des conditions du type pour gérer le match
+        //$condition = new {AutoGroupRuleConditionucfirst($type)}();
+
+        /**
+         * Gestion des vérifications des prix
+         */
+
+
         switch ($rule['condition_operator']) {
 
                 case '=':
@@ -146,26 +155,32 @@ class AutoGroupRuleProcessor {
                         return true;
                     }
                     break;
-                    
+
                 case 'LIKE %':
                     if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) ) {
                         return true;
                     }
                     break;
-                    
+
+                /**
+                 * Nouvelles conditions spécifiques
+                 */
+                case 'contains_product':
+                case 'sum_orders':
+
                 default:
                     return false;
-            } 
+            }
     }
-    
+
     /**
      * Ajout du client aux groupes
      * @param array $customerGroups Groupes du client
-     * @param boolean $cleanGroups Flag pour supprimer les autres groupes 
-     * @param boolean||int $defaultGroup Groupe par défaut du client 
+     * @param boolean $cleanGroups Flag pour supprimer les autres groupes
+     * @param boolean||int $defaultGroup Groupe par défaut du client
      */
     protected function _addCustomerGroups($customerGroups,$cleanGroups = false,$defaultGroup = false) {
-        
+
         //Si le flag de suppression des groupes
             if ( $cleanGroups )
                 $this->_customer->cleanGroups();
@@ -186,5 +201,5 @@ class AutoGroupRuleProcessor {
             //Ajout du client aux groups nécessaires
             $this->_customer->addGroups($customerGroups);
         }
-        
+
     }
