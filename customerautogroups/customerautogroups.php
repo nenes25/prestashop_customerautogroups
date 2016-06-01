@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -20,7 +20,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
@@ -87,7 +87,7 @@ class customerautogroups extends Module
                     `id_rule` int(11) NOT NULL AUTO_INCREMENT,
                     `condition_type` varchar(30) NOT NULL,
                     `condition_field` varchar(255) NOT NULL,
-                    `condition_operator` varchar(10) NOT NULL,
+                    `condition_operator` varchar(40) NOT NULL,
                     `condition_value` varchar(255) NOT NULL,
                     `id_group` int(11) NOT NULL,
                     `active` tinyint(1) unsigned NOT NULL,
@@ -284,9 +284,14 @@ class customerautogroups extends Module
             return;*/
 
         //Si c'est un guest inutile de traiter les règles
-
+        CustomLogger::log('Appel du hook');
         //Inclusion de la classe des règles
         include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRule.php';
+        include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRuleProcessor.php';
+        include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRuleCondition.php';
+        include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRuleConditionCustomer.php';
+        include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRuleConditionAddress.php';
+        include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRuleConditionOrder.php';
         $ruleProcessor = new AutoGroupRuleProcessor($params['customer']);
         $ruleProcessor->processOrderRules($params);
     }

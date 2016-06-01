@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -20,12 +20,12 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
 
-class AutoGroupRuleOrderProcessor {
+class AutoGroupRuleProcessor {
 
 
     protected $_rules = array();
@@ -48,10 +48,15 @@ class AutoGroupRuleOrderProcessor {
      */
     public function processOrderRules($params) {
 
+        CustomLogger::log('Entree dans la fonction '.__FUNCTION__);
+
         $order = $params['order'];
 
         //Récupération des règles applicables à la commande
-        $this->_getRules(AutoGroupRule::RULE_TYPE_ORDER);
+        $this->_getRules('order');
+
+        CustomLogger::log('Liste des règles');
+        CustomLogger::log($this->_rules);
 
         $customerGroups = array();
         $defaultGroup = false;
@@ -59,13 +64,16 @@ class AutoGroupRuleOrderProcessor {
 
         foreach ( $this->_rules as $rule ) {
 
+            CustomLogger::log('Traitement de la règle '.$rule['id_rule']);
+
             //Il faut que la propriété de l'objet existe
             if (!property_exists($order, $rule['condition_field'])) {
+                CustomLogger::log('Erreur propriete existe pas');
                  continue;
             }
 
-            if ( $this->_ruleMatch($rule, $order ,'orders')) {
-
+            if ( $this->_ruleMatch($rule, $order ,'order')) {
+                CustomLogger::log('Rule '.$rule['id_rule'].' match');
                 $customerGroups[] = $rule['id_group'];
 
                 //Si la règle doit être la dernière à être traitée, on sors de la boucle
@@ -94,9 +102,11 @@ class AutoGroupRuleOrderProcessor {
      */
     protected function _getRules($type){
 
+        CustomLogger::log('Règle du type '.$type);
+
         $rules = Db::getInstance()->ExecuteS("SELECT * "
                 . "FROM "._DB_PREFIX_."autogroup_rule "
-                . "WHERE active=1 AND condition_type IN (". implode(',',$type) .")"
+                . "WHERE active=1 AND condition_type IN ('".$type."')"
                 . "ORDER BY priority");
 
         $this->_rules = $rules;
@@ -111,66 +121,9 @@ class AutoGroupRuleOrderProcessor {
     protected function _ruleMatch($rule,$obj,$type = ''){
 
         //Appel de la classe des conditions du type pour gérer le match
-        //$condition = new {AutoGroupRuleConditionucfirst($type)}();
-
-        /**
-         * Gestion des vérifications des prix
-         */
-
-
-        switch ($rule['condition_operator']) {
-
-                case '=':
-                    if ($obj->{$rule['condition_field']} == $rule['condition_value']) {
-                        return true;
-                    }
-                    break;
-
-                case '!=':
-                    if ($obj->{$rule['condition_field']} != $rule['condition_value']) {
-                        return true;
-                    }
-                    break;
-
-                case '>':
-                    if ($obj->{$rule['condition_field']} > $rule['condition_value']) {
-                        return true;
-                    }
-                    break;
-
-                case '>=':
-                    if ($obj->{$rule['condition_field']} >= $rule['condition_value']) {
-                        return true;
-                    }
-                    break;
-
-                case '<':
-                    if ($obj->{$rule['condition_field']} < $rule['condition_value']) {
-                        return true;
-                    }
-                    break;
-
-                case '<=':
-                    if ($obj->{$rule['condition_field']} <= $rule['condition_value']) {
-                        return true;
-                    }
-                    break;
-
-                case 'LIKE %':
-                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) ) {
-                        return true;
-                    }
-                    break;
-
-                /**
-                 * Nouvelles conditions spécifiques
-                 */
-                case 'contains_product':
-                case 'sum_orders':
-
-                default:
-                    return false;
-            }
+        $conditionType = 'AutoGroupRuleCondition'.ucfirst($type);
+        $condition = new $conditionType();
+        return $condition->matchCondition($rule,$obj);
     }
 
     /**

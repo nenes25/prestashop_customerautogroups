@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -20,13 +20,13 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
 class AutoGroupRule extends ObjectModel
 {
-    
+
     public $id;
     public $name;
     public $description;
@@ -48,7 +48,7 @@ class AutoGroupRule extends ObjectModel
         'primary' => 'id_rule',
         'multilang' => true,
         'fields' => array(
-            'condition_type' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
+            'condition_type' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml','size' => 40),
             'condition_field' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',),
             'condition_operator' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',),
             'condition_value' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 254),

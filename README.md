@@ -1,3 +1,6 @@
+# Warning
+This branch is currently in developpement and should not be used in production environnement
+
 # prestashop_customerautogroups
 Prestashop module which automaticaly add customer in groups depending params after registration.
 The rules can be combined, and can be sorted by priority.
