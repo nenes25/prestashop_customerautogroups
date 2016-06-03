@@ -280,11 +280,14 @@ class customerautogroups extends Module
     public function hookActionValidateOrder($params) {
 
         //Si l'option n'est pas activée on ne fait rien
+        //@ToDO : Activer dans la version finale
         /*if ( ConfigurationCore::get('CUSTOMER_AUTOGROUPS_ORDER_RULES') != 1)
             return;*/
 
         //Si c'est un guest inutile de traiter les règles
-        CustomLogger::log('Appel du hook');
+        if ( $params['customer']->is_guest == 1)
+            return;
+
         //Inclusion de la classe des règles
         include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRule.php';
         include_once _PS_MODULE_DIR_.'/customerautogroups/classes/AutoGroupRuleProcessor.php';

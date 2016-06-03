@@ -48,15 +48,10 @@ class AutoGroupRuleProcessor {
      */
     public function processOrderRules($params) {
 
-        CustomLogger::log('Entree dans la fonction '.__FUNCTION__);
-
         $order = $params['order'];
 
         //Récupération des règles applicables à la commande
         $this->_getRules('order');
-
-        CustomLogger::log('Liste des règles');
-        CustomLogger::log($this->_rules);
 
         $customerGroups = array();
         $defaultGroup = false;
@@ -64,16 +59,12 @@ class AutoGroupRuleProcessor {
 
         foreach ( $this->_rules as $rule ) {
 
-            CustomLogger::log('Traitement de la règle '.$rule['id_rule']);
-
             //Il faut que la propriété de l'objet existe
             if (!property_exists($order, $rule['condition_field'])) {
-                CustomLogger::log('Erreur propriete existe pas');
                  continue;
             }
 
             if ( $this->_ruleMatch($rule, $order ,'order')) {
-                CustomLogger::log('Rule '.$rule['id_rule'].' match');
                 $customerGroups[] = $rule['id_group'];
 
                 //Si la règle doit être la dernière à être traitée, on sors de la boucle
@@ -101,8 +92,6 @@ class AutoGroupRuleProcessor {
      * @param string || array $types
      */
     protected function _getRules($type){
-
-        CustomLogger::log('Règle du type '.$type);
 
         $rules = Db::getInstance()->ExecuteS("SELECT * "
                 . "FROM "._DB_PREFIX_."autogroup_rule "

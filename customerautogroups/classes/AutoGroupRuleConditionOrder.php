@@ -77,8 +77,6 @@ class AutoGroupRuleConditionOrder extends AutoGroupRuleCondition
      */
     public function matchCondition($rule,$obj){
 
-        CustomLogger::log('Entree dans la function '.__FUNCTION__);
-
         switch ($rule['condition_operator']) {
 
                 case '=':
@@ -178,7 +176,7 @@ class AutoGroupRuleConditionOrder extends AutoGroupRuleCondition
 
     /**
      * Vérifie le nombre de commandes validées de l'utilisateur
-     * 
+     *
      * @param int $orderNumber : Nombre de commandes à valider
      * @param Order $order
      * @return boolean
