@@ -15,13 +15,13 @@ include_once $exec_dir.'config/config.inc.php';
 include_once _PS_MODULE_DIR_ . '/customerautogroups/classes/AutoGroupRule.php';
 
 class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
-    
+
     //Nom du module
-    protected $_moduleName = 'contactformfields';
-    
+    protected $_moduleName = 'customerautogroups';
+
     //Tab admin du module
     protected $_moduleTabName = 'Rules';
-    
+
     /**
      * Avant l'exécution de la classe
      * Mise à jour de la config + suppression des données existantes
@@ -31,7 +31,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         self::cleanAllCustomCustomersGroup();
         self::cleanAutoGroupsRules();
     }
-    
+
     /**
      * Vérification que le module est installé (via la méthode prestashop)
      * @group customerautogroups_install
@@ -39,20 +39,20 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     public function testModuleIsInstalled() {
         $this->assertTrue(Module::isInstalled($this->_moduleName));
     }
-    
+
     /**
      * On vérifie que le module est bien greffé sur les nouveaux hooks
      * @depends testModuleIsInstalled
      * @group customerautogroups_install
      */
     public function testModuleIsHooked() {
-        
+
         //Instanciation du module
-        $moduleInstance = ModuleCore::getInstanceByName($this->_moduleName);
-        
+        $moduleInstance = Module::getInstanceByName($this->_moduleName);
+
         $this->assertNotFalse($moduleInstance->isRegisteredInHook('actionCustomerAccountAdd'));
     }
-    
+
     /**
      * Vérifie que la tab du back office est bien installée
      * @group eicmslinks_install
@@ -61,7 +61,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         $id_tab = Tab::getIdFromClassName($this->_moduleTabName);
         $this->assertNotFalse($id_tab);
     }
-    
+
     //@ToDO : Vérfier la bonne présence des bases de données
 
     /**
@@ -194,7 +194,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         $customer = $this->_createCustomer($customerDatas);
 
         //Exécution du hook dans lequel les données sont traitées
-        HookCore::exec('actionCustomerAccountAdd', array('newCustomer' => $customer));
+        Hook::exec('actionCustomerAccountAdd', array('newCustomer' => $customer));
 
         //On recharge les informations du client depuis la bdd (après le passage dans le hook )
         $customerDb = new Customer($customer->id);
