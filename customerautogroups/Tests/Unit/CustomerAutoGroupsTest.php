@@ -118,9 +118,27 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+	 * Dataprovider get Rules tests
+	 */
+	public function getAutoGroupRules() {
+		
+		$customerFileName = dirname(__FILE__).'/fixtures/rules.yml';
+		
+		$yml = new PHPUnit_Extensions_Database_DataSet_YamlDataSet($customerFileName);
+		$datas = array();
+        $ymlDatas = $yml->getTable('datas');
+
+		for ($i = 0; $i < $ymlDatas->getRowCount(); $i++) {
+			$datas[] = $ymlDatas->getRow($i);
+		}
+		
+		return $datas[0];
+	}
+	
+	/**
      * Dataprovider des données de test pour les règle
      */
-    public function getAutoGroupRules() {
+    public function getAutoGroupRulesStatic() {
 
         return array(
             array('rule_us' => array(
