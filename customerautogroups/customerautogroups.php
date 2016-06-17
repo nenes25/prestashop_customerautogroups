@@ -32,7 +32,7 @@ class customerautogroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.3.0';
+        $this->version       = '0.3.1';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -162,7 +162,7 @@ class customerautogroups extends Module
 
         $customerGroups = array();
         foreach ($rules as $rule) {
-            
+
             //Traitement des règles de type "Client"
             if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_CUSTOMER) {
                 $obj = $customer;
@@ -189,7 +189,7 @@ class customerautogroups extends Module
             $ruleApplied = false;
             $defaultGroup = false;
             $cleanGroups = false;
-            
+
             switch ($rule['condition_operator']) {
 
                 case '=':
@@ -215,7 +215,7 @@ class customerautogroups extends Module
                 case '<=':
                     if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
                     break;
-                    
+
                 case 'LIKE %':
                     if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) )
                         $ruleApplied = true;
@@ -237,7 +237,7 @@ class customerautogroups extends Module
                     break;
                 }
             }
-            
+
         }
         //Ajout du client aux groupes nécessaires
         if ( sizeof($customerGroups)) {
