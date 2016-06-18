@@ -10,8 +10,8 @@
 //Il faudra optimiser ce point, car les tests doivent être lancés de la manière suivante
 // phpunit Tests/Unit/CustomerAutoGroupsTest.php à la racine du dossier du module
 
-$exec_dir = str_replace('modules/customerautogroups','',trim(shell_exec('pwd')));
-include_once $exec_dir.'config/config.inc.php';
+#$exec_dir = str_replace('modules/customerautogroups','',trim(shell_exec('pwd')));
+include_once dirname(__FILE__).'/../../../../config/config.inc.php';
 include_once _PS_MODULE_DIR_ . '/customerautogroups/classes/AutoGroupRule.php';
 
 class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
@@ -66,11 +66,12 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
 
     /**
      * Test de creation d'une règle
+     * @group rules
      * @param array $rule
      * @dataProvider getAutoGroupRules
      */
     public function testcreateAutoGroupRule($rule) {
-
+				
         //Création de la nouvelle règle
         $ruleModel = new AutoGroupRule();
 
@@ -129,10 +130,10 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
         $ymlDatas = $yml->getTable('datas');
 
 		for ($i = 0; $i < $ymlDatas->getRowCount(); $i++) {
-			$datas[] = $ymlDatas->getRow($i);
+			$datas[] = array($ymlDatas->getRow($i));
 		}
 		
-		return $datas[0];
+		return $datas;
 	}
 	
 	/**

@@ -1,120 +1,118 @@
 datas:
- -
-  rules:
-   - 
+ - 
     name: "US group auto"
     description: "Auto groups for us customers"
     condition_type: 2
     condition_field: "id_country"
     condition_operator: "="
     condition_value: "21"
-    customer_group_name:"us_group"
-    priority:0
-    active:1
-    stop_processing:1
-    default_group:1
-    clean_groups:1
-  - 
-   name:
+    customer_group_name: "us_group"
+    priority: 0
+    active: 1
+    stop_processing: 1
+    default_group: 1
+    clean_groups: 1
+ -
+   name: "FR group auto"
    description: "FR group auto"
    condition_type: 2
    condition_field: "id_country"
    condition_operator: "="
    condition_value: "8"
-   customer_group_name:"fr_group"
-   priority:0
-   active:1
-   stop_processing:1
-   default_group:1
-   clean_groups:1
+   customer_group_name: "fr_group"
+   priority: 0
+   active: 1
+   stop_processing: 1
+   default_group: 1
+   clean_groups: 1
  -
-  name:"Males user"
+  name: "Males user"
   description: "Auto groups for male users"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: "="
   condition_value: "1"
-  customer_group_name:"male_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "male_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
  -
-  name:"gmail user"
+  name: "gmail user"
   description: "Test for like condition"
   condition_type: 1
   condition_field: "email"
   condition_operator: "LIKE %"
   condition_value: "@gmail.com"
-  customer_group_name:"gmail_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "gmail_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
  -
-  name:"condition different"
+  name: "condition different"
   description: "Test for condition !="
   condition_type: 1
   condition_field: "firstname"
   condition_operator: "!="
   condition_value: "test"
-  customer_group_name:"tests_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "tests_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
  -
-  name:"condition sup"
+  name: "condition sup"
   description: "Test for condition >"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: ">"
   condition_value: 0
-  customer_group_name:"tests_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "tests_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
  -
-  name:"condition sup or equal"
+  name: "condition sup or equal"
   description: "Test for condition >"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: ">="
   condition_value: 1
-  customer_group_name:"tests_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "tests_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
  -
-  name:"condition inferior"
+  name: "condition inferior"
   description: "Test for condition <"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: "<"
   condition_value: 2
-  customer_group_name:"tests_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "tests_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
  -
-  name:"condition inferior or equal"
+  name: "condition inferior or equal"
   description: "Test for condition <="
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: "<="
   condition_value: 2
-  customer_group_name:"tests_users"
-  priority:1
-  active:1
-  stop_processing:0
-  default_group:0
-  clean_groups:0
+  customer_group_name: "tests_users"
+  priority: 1
+  active: 1
+  stop_processing: 0
+  default_group: 0
+  clean_groups: 0
