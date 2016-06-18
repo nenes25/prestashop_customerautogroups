@@ -29,14 +29,13 @@ class RulesController extends ModuleAdminController
 {
     //Champs clients exclus de la condition
     protected $_customerExcludedFields = array('id', 'secure_key', 'ip_registration_newsletter', 'id_default_group', 'last_passwd_gen', 'last_passwd_gen',
-        'passwd', 'definition', 'date_add', 'date_upd');
+        'passwd', 'definition');
 
     //Champs clients
     protected $customerFields;
 
     //Champs addresse exclus de la condition
-    protected $_addressExcludedFields = array('force_id', 'id_customer', 'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted', 'definition', 'date_add',
-        'date_upd');
+    protected $_addressExcludedFields = array('force_id', 'id_customer', 'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted', 'definition');
 
     //Champs adresse
     protected $addressFields = array();

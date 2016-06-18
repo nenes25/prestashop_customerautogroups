@@ -53,7 +53,7 @@ class AutoGroupRule extends ObjectModel
         'fields' => array(
             'condition_type' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
             'condition_field' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',),
-            'condition_operator' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',),
+            'condition_operator' => array('type' => self::TYPE_HTML),
             'condition_value' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 254),
             'id_group' => array('type' => self::TYPE_INT),
             'active' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
