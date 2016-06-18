@@ -159,12 +159,12 @@ class RulesController extends ModuleAdminController
 
         //Liste des opérateurs
         $operatorsList = array(
-            array('id' => '=', 'value' => '='),
-            array('id' => '!=', 'value' => '!='),
-            array('id' => '>', 'value' => '>'),
-            array('id' => '>=', 'value' => '>='),
-            array('id' => '<', 'value' => '<'),
-            array('id' => '<=', 'value' => '<='),
+            array('id' => 'eq', 'value' => '='),
+            array('id' => 'ne', 'value' => '!='),
+            array('id' => 'gt', 'value' => '>'),
+            array('id' => 'ge', 'value' => '>='),
+            array('id' => 'lt', 'value' => '<'),
+            array('id' => 'le', 'value' => '<='),
             array('id' => 'LIKE %', 'value' => 'LIKE %'),
         );
 
