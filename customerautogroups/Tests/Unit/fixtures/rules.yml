@@ -66,7 +66,7 @@ datas:
   clean_groups: 0
  -
   name: "condition sup"
-  description: "Test for condition >"
+  description: "Test for condition sup"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: ">"
@@ -79,7 +79,7 @@ datas:
   clean_groups: 0
  -
   name: "condition sup or equal"
-  description: "Test for condition >"
+  description: "Test for condition sup or equal"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: ">="
@@ -92,7 +92,7 @@ datas:
   clean_groups: 0
  -
   name: "condition inferior"
-  description: "Test for condition <"
+  description: "Test for condition inferior"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: "<"
@@ -105,7 +105,7 @@ datas:
   clean_groups: 0
  -
   name: "condition inferior or equal"
-  description: "Test for condition <="
+  description: "Test for condition inferior or equal"
   condition_type: 1
   condition_field: "id_gender"
   condition_operator: "<="
