@@ -4,7 +4,7 @@ datas:
     description: "Auto groups for us customers"
     condition_type: 2
     condition_field: "id_country"
-    condition_operator: "="
+    condition_operator: "eq"
     condition_value: "21"
     customer_group_name: "us_group"
     priority: 0
@@ -17,7 +17,7 @@ datas:
    description: "FR group auto"
    condition_type: 2
    condition_field: "id_country"
-   condition_operator: "="
+   condition_operator: "eq"
    condition_value: "8"
    customer_group_name: "fr_group"
    priority: 0
@@ -30,7 +30,7 @@ datas:
   description: "Auto groups for male users"
   condition_type: 1
   condition_field: "id_gender"
-  condition_operator: "="
+  condition_operator: "eq"
   condition_value: "1"
   customer_group_name: "male_users"
   priority: 1
@@ -56,7 +56,7 @@ datas:
   description: "Test for condition !="
   condition_type: 1
   condition_field: "firstname"
-  condition_operator: "!="
+  condition_operator: "ne"
   condition_value: "test"
   customer_group_name: "tests_users"
   priority: 1
@@ -69,7 +69,7 @@ datas:
   description: "Test for condition sup"
   condition_type: 1
   condition_field: "id_gender"
-  condition_operator: ">"
+  condition_operator: "gt"
   condition_value: 0
   customer_group_name: "tests_users"
   priority: 1
@@ -82,7 +82,7 @@ datas:
   description: "Test for condition sup or equal"
   condition_type: 1
   condition_field: "id_gender"
-  condition_operator: ">="
+  condition_operator: "ge"
   condition_value: 1
   customer_group_name: "tests_users"
   priority: 1
@@ -95,7 +95,7 @@ datas:
   description: "Test for condition inferior"
   condition_type: 1
   condition_field: "id_gender"
-  condition_operator: "<"
+  condition_operator: "lt"
   condition_value: 2
   customer_group_name: "tests_users"
   priority: 1
@@ -108,7 +108,7 @@ datas:
   description: "Test for condition inferior or equal"
   condition_type: 1
   condition_field: "id_gender"
-  condition_operator: "<="
+  condition_operator: "le"
   condition_value: 2
   customer_group_name: "tests_users"
   priority: 1

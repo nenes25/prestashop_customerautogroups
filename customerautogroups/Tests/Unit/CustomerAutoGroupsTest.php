@@ -147,7 +147,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                     'description' => 'Auto groups for us customers', //Description de la règle
                     'condition_type' => 2, // Type de condition 1 customer / 2 addresse
                     'condition_field' => 'id_country', //Champ condition
-                    'condition_operator' => '=', // Operateur
+                    'condition_operator' => 'eq', // Operateur
                     'condition_value' => '21', // Valeur du champ
                     'customer_group_name' => 'us_group', // Groupe a assigner à l'utilisateur ( créé automatiquement )
                     'priority' => 0, //Priorité règle 0 Haute 10 Basse
@@ -161,7 +161,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                     'description' => 'Auto groups for french customers',
                     'condition_type' => 2, //1 customer , 2 addresse
                     'condition_field' => 'id_country',
-                    'condition_operator' => '=',
+                    'condition_operator' => 'eq',
                     'condition_value' => '8',
                     'customer_group_name' => 'fr_group',
                     'priority' => 0,
@@ -175,7 +175,7 @@ class CustomerAutoGroupsTest extends PHPUnit_Framework_TestCase {
                     'description' => 'Auto groups for male users',
                     'condition_type' => 1, //1 customer , 2 addresse
                     'condition_field' => 'id_gender',
-                    'condition_operator' => '=',
+                    'condition_operator' => 'eq',
                     'condition_value' => '1',
                     'customer_group_name' => 'male_users',
                     'priority' => 1,
