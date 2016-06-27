@@ -39,8 +39,6 @@ class AutoGroupRuleConditionCustomer extends AutoGroupRuleCondition
         'last_passwd_gen',
         'passwd',
         'definition',
-        'date_add',
-        'date_upd'
         );
 
     protected $_objectClass = 'Customer';

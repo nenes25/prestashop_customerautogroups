@@ -53,12 +53,12 @@ class AutoGroupRuleConditionOrder extends AutoGroupRuleCondition
      * Nouvelles conditions de filtrages
      */
     protected $_operatorsList = array(
-            array('id' => '=', 'value' => '='),
-            array('id' => '!=', 'value' => '!='),
-            array('id' => '>', 'value' => '>'),
-            array('id' => '>=', 'value' => '>='),
-            array('id' => '<', 'value' => '<'),
-            array('id' => '<=', 'value' => '<='),
+            array('id' => 'eq', 'value' => '='),
+            array('id' => 'ne', 'value' => '!='),
+            array('id' => 'gt', 'value' => '>'),
+            array('id' => 'ge', 'value' => '>='),
+            array('id' => 'lt', 'value' => '<'),
+            array('id' => 'le', 'value' => '<='),
             array('id' => 'LIKE %', 'value' => 'LIKE %'),
             //Nouveaux opérateurs
             array('id' => 'contains_product', 'value' => 'contains product'),
@@ -79,37 +79,37 @@ class AutoGroupRuleConditionOrder extends AutoGroupRuleCondition
 
         switch ($rule['condition_operator']) {
 
-                case '=':
+                case 'eq':
                     if ($obj->{$rule['condition_field']} == $rule['condition_value']) {
                         return true;
                     }
                     break;
 
-                case '!=':
+                case 'ne':
                     if ($obj->{$rule['condition_field']} != $rule['condition_value']) {
                         return true;
                     }
                     break;
 
-                case '>':
+                case 'gt':
                     if ($obj->{$rule['condition_field']} > $rule['condition_value']) {
                         return true;
                     }
                     break;
 
-                case '>=':
+                case 'ge':
                     if ($obj->{$rule['condition_field']} >= $rule['condition_value']) {
                         return true;
                     }
                     break;
 
-                case '<':
+                case 'lt':
                     if ($obj->{$rule['condition_field']} < $rule['condition_value']) {
                         return true;
                     }
                     break;
 
-                case '<=':
+                case 'le':
                     if ($obj->{$rule['condition_field']} <= $rule['condition_value']) {
                         return true;
                     }

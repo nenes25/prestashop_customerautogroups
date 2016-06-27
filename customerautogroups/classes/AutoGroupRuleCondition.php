@@ -32,12 +32,12 @@ abstract class AutoGroupRuleCondition
      * @var type
      */
     protected $_operatorsList = array(
-            array('id' => '=', 'value' => '='),
-            array('id' => '!=', 'value' => '!='),
-            array('id' => '>', 'value' => '>'),
-            array('id' => '>=', 'value' => '>='),
-            array('id' => '<', 'value' => '<'),
-            array('id' => '<=', 'value' => '<='),
+            array('id' => 'eq', 'value' => '='),
+            array('id' => 'ne', 'value' => '!='),
+            array('id' => 'gt', 'value' => '>'),
+            array('id' => 'ge', 'value' => '>='),
+            array('id' => 'lt', 'value' => '<'),
+            array('id' => 'le', 'value' => '<='),
             array('id' => 'LIKE %', 'value' => 'LIKE %'),
         );
 
