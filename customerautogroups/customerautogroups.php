@@ -32,7 +32,7 @@ class customerautogroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'hhennes';
-        $this->version       = '0.3.2';
+        $this->version       = '0.3.3';
         $this->need_instance = 0;
 
         parent::__construct();

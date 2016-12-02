@@ -28,20 +28,26 @@ include_once dirname(__FILE__).'/../../classes/AutoGroupRule.php';
 class RulesController extends ModuleAdminController
 {
     //Champs clients exclus de la condition
-    protected $_customerExcludedFields = array('id', 'secure_key', 'ip_registration_newsletter', 'id_default_group', 'last_passwd_gen', 'last_passwd_gen',
-        'passwd', 'definition');
+    protected $_customerExcludedFields = array('id', 'secure_key',
+        'ip_registration_newsletter', 'id_default_group', 'last_passwd_gen',
+        'last_passwd_gen','passwd', 'definition');
 
     //Champs clients
     protected $customerFields;
 
     //Champs addresse exclus de la condition
-    protected $_addressExcludedFields = array('force_id', 'id_customer', 'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted', 'definition');
+    protected $_addressExcludedFields = array('force_id', 'id_customer',
+        'id_manufacturer', 'id_warehouse', 'id_supplier', 'deleted',
+        'definition');
 
     //Champs adresse
     protected $addressFields = array();
 
     //Données du champ condition_field
     protected $_conditionFieldDatas;
+
+    //Types de règles
+    protected $rules_types = array();
 
     public function __construct()
     {
@@ -50,18 +56,36 @@ class RulesController extends ModuleAdminController
         $this->identifier = 'id_rule';
         $this->className  = 'AutoGroupRule';
         $this->lang       = true;
+	$this->context = Context::getContext();
         $this->addRowAction('edit');
         $this->addRowAction('delete');
-        $this->_orderWay  = 'ASC';
+
+	$this->rules_types = array(
+            AutoGroupRule::RULE_TYPE_CUSTOMER => $this->l('Customer'),
+            AutoGroupRule::RULE_TYPE_ADDRESS => $this->l('Customer Address')
+        );
+
+	$this->_select = 'IF ( a.`condition_type` = '.AutoGroupRule::RULE_TYPE_CUSTOMER.' , \''.$this->l('Customer').'\',\''.$this->l('Customer Address').'\') AS condition_type_name,'
+                . 'gl.name AS group_name';
+	$this->_join = 'LEFT JOIN `'._DB_PREFIX_.'group_lang` gl ON (gl.`id_group` = a.`id_group` AND gl.`id_lang` = '.(int) $this->context->language->id.')';
+	$this->_orderWay  = 'ASC';
 
         $this->bulk_actions = array('delete' => array('text' => $this->l('Delete selected'), 'icon' => 'icon-trash', 'confirm' => $this->l('Delete selected items?')));
 
-        $this->rules_types = array(1 => $this->l('Customer'), 2 => $this->l('Customer Address'));
+        $groupsArray = array();
+        $groups = Group::getGroups($this->context->language->id);
+        foreach ( $groups as $group){
+                $groupsArray[$group['id_group']] = $group['name'];
+        }
 
         $this->fields_list = array(
-            'id_rule' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
+            'id_rule' => array(
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs'
+            ),
             'name' => array('title' => $this->l('Name')),
-            'condition_type' => array(
+            'condition_type_name' => array(
                 'title' => $this->l('Condition Type'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
@@ -70,12 +94,45 @@ class RulesController extends ModuleAdminController
                 'filter_key' => 'condition_type',
                 'filter_type' => 'int',
             ),
-            'id_group' => array('title' => $this->l('Id group'), 'class' => 'fixed-width-sm', 'align' => 'center',),
-            'priority' => array('title' => $this->l('Priority'), 'align' => 'center', 'class' => 'fixed-width-sm'),
-            'stop_processing' => array('title' => $this->l('Stop processing'), 'active' => 'stop_processing', 'type' => 'bool', 'align' => 'center'),
-            'default_group'  => array('title' => $this->l('Default customer Group'), 'active' => 'default_group', 'type' => 'bool', 'align' => 'center'),
-            'clean_groups'  => array('title' => $this->l('Delete all others groups'), 'active' => 'clean_groups', 'type' => 'bool', 'align' => 'center'),
-            'active' => array('title' => $this->l('Status'), 'active' => 'status', 'type' => 'bool', 'align' => 'center'),
+            'group_name' => array(
+                'title' => $this->l('Group'),
+                'class' => 'fixed-width-sm',
+                'align' => 'center',
+                'type' => 'select',
+                'list' => $groupsArray,
+                'filter_key' => 'a!id_group',
+                'filter_type' => 'int',
+            ),
+            'priority' => array(
+                'title' => $this->l('Priority'),
+                'align' => 'center',
+                'class' => 'fixed-width-sm'
+            ),
+            'stop_processing' => array(
+                'title' => $this->l('Stop processing'),
+                'active' => 'stop_processing',
+                'type' => 'bool',
+                'align' => 'center'
+            ),
+            'default_group'  => array(
+                'title' => $this->l('Default customer Group'),
+                'active' => 'default_group',
+                'type' => 'bool',
+                'align' => 'center'
+            ),
+            'clean_groups'  => array(
+                'title' => $this->l('Delete all others groups'),
+                'active' => 'clean_groups',
+                'type' => 'bool',
+                'align' =>
+                'center'
+            ),
+            'active' => array(
+                'title' => $this->l('Status'),
+                'active' => 'status',
+                'type' => 'bool',
+                'align' => 'center'
+            ),
         );
 
         parent::__construct();
