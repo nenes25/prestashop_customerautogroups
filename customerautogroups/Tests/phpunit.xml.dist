@@ -1,0 +1,23 @@
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+         colors="true"
+         bootstrap="bootstrap.php"
+         backupGlobals="false"
+         verbose="true"
+         stopOnError="false"
+         stopOnFailure="false"
+>
+
+<testsuites>
+<!-- Tests unitaires -->
+<testsuite name="Unit">
+	<directory suffix="Test.php">Unit/</directory>
+</testsuite>
+</testsuites>
+   
+    <!-- Variables de l'environnement -->
+    <php>
+        <env name="test" value="test"/>
+    </php>
+</phpunit>
+

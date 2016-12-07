@@ -1,0 +1,14 @@
+{
+    "name": "nenes25/customer_autogroups_tests",
+    "description": "tests for prestashop module customerautogroups",
+    "require": {
+        "phpunit/phpunit": "4.8",
+        "phpunit/dbunit": "^2.0"
+    },
+    "authors": [
+        {
+            "name": "hhennes",
+            "email": "contact@h-hennes.fr"
+        }
+    ]
+}
