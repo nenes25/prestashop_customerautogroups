@@ -26,7 +26,6 @@
 
 class CustomerAutoGroups extends Module
 {
-
     public function __construct()
     {
         $this->author        = 'hhennes';
@@ -47,8 +46,7 @@ class CustomerAutoGroups extends Module
      */
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd'))
-        {
+        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd')) {
             return false;
         }
 
@@ -68,7 +66,7 @@ class CustomerAutoGroups extends Module
             return false;
         }
 
-        if ( !$this->_installSql()) {
+        if (!$this->_installSql()) {
             return false;
         }
 
@@ -106,7 +104,7 @@ class CustomerAutoGroups extends Module
                         PRIMARY KEY (`id_rule`,`id_lang`)
                       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;" ;
 
-        if ( !Db::getInstance()->Execute($sqlRule) || !Db::getInstance()->Execute($sqlRuleLang)) {
+        if (!Db::getInstance()->Execute($sqlRule) || !Db::getInstance()->Execute($sqlRuleLang)) {
             return false;
         }
 
@@ -171,7 +169,7 @@ class CustomerAutoGroups extends Module
                 $obj = $customer;
             }
             //Traitement des règles de type Adresse
-            else if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS ) {
+            elseif ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS) {
                 //Normalement vu que le client vient d'être créé il ne peut avoir qu'une adresse
                 $id_address = Db::getInstance()->getValue("SELECT id_address FROM "._DB_PREFIX_."address WHERE id_customer=".$customer->id);
                 $obj        = new Address($id_address);
@@ -208,7 +206,7 @@ class CustomerAutoGroups extends Module
                     break;
 
                 case 'gt':
-                    if ($obj->{$rule['condition_field']} > $rule['condition_value']){
+                    if ($obj->{$rule['condition_field']} > $rule['condition_value']) {
                         $ruleApplied = true;
                     }
                     break;
@@ -232,7 +230,7 @@ class CustomerAutoGroups extends Module
                     break;
 
                 case 'LIKE %':
-                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) ) {
+                    if (preg_match('#'.$rule['condition_value'].'#', $obj->{$rule['condition_field']})) {
                         $ruleApplied = true;
                     }
                     break;
@@ -253,18 +251,17 @@ class CustomerAutoGroups extends Module
                     break;
                 }
             }
-
         }
         //Ajout du client aux groupes nécessaires
-        if ( sizeof($customerGroups)) {
+        if (sizeof($customerGroups)) {
 
             //Si le flag de suppression des groupes
-            if ( $cleanGroups ) {
+            if ($cleanGroups) {
                 $customer->cleanGroups();
             }
 
             //Application du groupe par défaut
-            if ( $defaultGroup ) {
+            if ($defaultGroup) {
                 $customer->id_default_group = $defaultGroup;
                 try {
                     $customer->save();
@@ -279,6 +276,5 @@ class CustomerAutoGroups extends Module
             //Ajout du client aux groups nécessaires
             $customer->addGroups($customerGroups);
         }
-
     }
 }
