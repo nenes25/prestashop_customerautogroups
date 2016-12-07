@@ -57,7 +57,7 @@ class CustomerAutoGroups extends Module
         $tab->id_parent = Tab::getIdFromClassName('AdminParentCustomer');
         $languages       = Language::getLanguages();
         foreach ($languages as $lang) {
-            $tab->name[$lang['id_lang']] = 'Customer Auto Groups';
+            $tab->name[$lang['id_lang']] = $this->l('Customers Auto groups');
         }
         try {
             $tab->save();
