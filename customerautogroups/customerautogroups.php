@@ -167,15 +167,11 @@ class CustomerAutoGroups extends Module
             //Traitement des règles de type "Client"
             if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_CUSTOMER) {
                 $obj = $customer;
-            }
-            //Traitement des règles de type Adresse
-            elseif ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS) {
+            } elseif ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS) {
                 //Normalement vu que le client vient d'être créé il ne peut avoir qu'une adresse
                 $id_address = Db::getInstance()->getValue("SELECT id_address FROM "._DB_PREFIX_."address WHERE id_customer=".$customer->id);
                 $obj        = new Address($id_address);
-            }
-            //Type Inconnu : non traité
-            else {
+            } else {
                 //echo $this->l('Error : rule type unknow');
                 continue;
             }
