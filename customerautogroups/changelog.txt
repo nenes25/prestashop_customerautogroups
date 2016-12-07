@@ -7,3 +7,4 @@ V 0.3.0 - 2016-01-11 : Nouvelles conditions de filtres (Like) // New filters con
 V 0.3.1 - 2016-06-17 : Autorisation de paramètres exclus // allow excluded parameters
 V 0.3.2 - 2016-06-18 : Correction conditions < && <=
 V 0.3.3 - 2016-12-02 : Optimisation des lablels des filtres de la grille // Grid filters labels optimisation
+V 0.3.4 - 2016-12-07 : PS norms

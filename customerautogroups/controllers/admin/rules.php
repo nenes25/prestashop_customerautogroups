@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,10 +19,11 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
+
 include_once dirname(__FILE__).'/../../classes/AutoGroupRule.php';
 
 class RulesController extends ModuleAdminController
@@ -145,7 +146,7 @@ class RulesController extends ModuleAdminController
     public function setMedia()
     {
         parent::setMedia();
-        $this->addJS(_MODULE_DIR_.'customerautogroups/views/admin/js/customerautogroups.js');
+        $this->addJS(_MODULE_DIR_.'customerautogroups/views/js/admin/customerautogroups.js');
     }
 
 
@@ -189,10 +190,12 @@ class RulesController extends ModuleAdminController
         //Gestion de l'affichage du champ "condition_field" pour les règles déjà existantes
         if ( Tools::getValue('id_rule')) {
             $rule = new AutoGroupRule(Tools::getValue('id_rule'));
-            if ( $rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER )
+            if ( $rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER ) {
                 $this->_conditionFieldDatas = $this->customerFields;
-            else
+            }
+            else {
                 $this->_conditionFieldDatas = $this->addressFields;
+            }
         }
         else {
             $this->_conditionFieldDatas = $this->customerFields;
@@ -403,7 +406,8 @@ class RulesController extends ModuleAdminController
     /**
      * Mise à jour ajax des champs des règles en fonction du type
      */
-    public function displayAjaxUpdateConditionTypeSelect(){
+    public function displayAjaxUpdateConditionTypeSelect()
+    {
 
         $this->_initForm();
 

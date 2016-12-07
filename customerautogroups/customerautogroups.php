@@ -1,7 +1,6 @@
 <?php
-
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -20,19 +19,21 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
-class customerautogroups extends Module
+
+class CustomerAutoGroups extends Module
 {
 
     public function __construct()
     {
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
-        $this->tab           = 'hhennes';
-        $this->version       = '0.3.3';
+        $this->tab           = 'others';
+        $this->version       = '0.3.4';
+        $this->bootstrap = true;
         $this->need_instance = 0;
 
         parent::__construct();
@@ -67,8 +68,9 @@ class customerautogroups extends Module
             return false;
         }
 
-        if ( !$this->_installSql())
+        if ( !$this->_installSql()) {
             return false;
+        }
 
         return true;
     }
@@ -104,8 +106,9 @@ class customerautogroups extends Module
                         PRIMARY KEY (`id_rule`,`id_lang`)
                       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;" ;
 
-        if ( !Db::getInstance()->Execute($sqlRule) || !Db::getInstance()->Execute($sqlRuleLang))
+        if ( !Db::getInstance()->Execute($sqlRule) || !Db::getInstance()->Execute($sqlRuleLang)) {
             return false;
+        }
 
         return true;
     }
@@ -152,7 +155,7 @@ class customerautogroups extends Module
 
         //Si le client n'a pas d'adresse on ne peut pas traiter les règles liées aux données d'adresses.
         if (!$customer_addresses) {
-            $sqlCond = ' AND condition_type = 1 ';
+            $sqlCond = ' AND condition_type = '.AutoGroupRule::RULE_TYPE_CUSTOMER;
         } else {
             $sqlCond = '';
         }
@@ -193,32 +196,45 @@ class customerautogroups extends Module
             switch ($rule['condition_operator']) {
 
                 case 'eq':
-                    if ($obj->{$rule['condition_field']} == $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} == $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'ne':
-                    if ($obj->{$rule['condition_field']} != $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} != $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'gt':
-                    if ($obj->{$rule['condition_field']} > $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} > $rule['condition_value']){
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'ge':
-                    if ($obj->{$rule['condition_field']} >= $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} >= $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'lt':
-                    if ($obj->{$rule['condition_field']} < $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} < $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'le':
-                    if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} <= $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'LIKE %':
-                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) )
+                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) ) {
                         $ruleApplied = true;
+                    }
                     break;
             }
 
@@ -243,8 +259,9 @@ class customerautogroups extends Module
         if ( sizeof($customerGroups)) {
 
             //Si le flag de suppression des groupes
-            if ( $cleanGroups )
+            if ( $cleanGroups ) {
                 $customer->cleanGroups();
+            }
 
             //Application du groupe par défaut
             if ( $defaultGroup ) {
