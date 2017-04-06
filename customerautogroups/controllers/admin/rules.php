@@ -418,4 +418,22 @@ class RulesController extends ModuleAdminController
             echo '<option value="'.$field['id'].'">'.$field['value'].'</option>';
         }
     }
+
+    /**
+     * Surcharge de la fonction de traduction sur PS 1.7 et supérieur.
+     * La fonction globale ne fonctionne pas
+     * @param type $string
+     * @param type $class
+     * @param type $addslashes
+     * @param type $htmlentities
+     * @return type
+     */
+    protected function l($string, $class = null, $addslashes = false, $htmlentities = true)
+    {
+        if ( _PS_VERSION_ >= '1.7') {
+            return Context::getContext()->getTranslator()->trans($string);
+        } else {
+            return parent::l($string, $class, $addslashes, $htmlentities);
+        }
+    }
 }

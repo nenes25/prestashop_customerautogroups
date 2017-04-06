@@ -31,7 +31,7 @@ class CustomerAutoGroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'others';
-        $this->version       = '0.3.4';
+        $this->version       = '0.4.0';
         $this->bootstrap = true;
         $this->need_instance = 0;
 
