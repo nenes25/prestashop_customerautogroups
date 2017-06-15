@@ -1,7 +1,6 @@
 <?php
-
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -20,19 +19,20 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
-class customerautogroups extends Module
+class CustomerAutoGroups extends Module
 {
 
     public function __construct()
     {
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
-        $this->tab           = 'hhennes';
-        $this->version       = '0.3.3';
+        $this->tab           = 'others';
+        $this->version       = '0.5.0';
+        $this->bootstrap = true;
         $this->need_instance = 0;
 
         parent::__construct();
@@ -46,8 +46,7 @@ class customerautogroups extends Module
      */
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd'))
-        {
+        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd')) {
             return false;
         }
 
@@ -58,7 +57,7 @@ class customerautogroups extends Module
         $tab->id_parent = Tab::getIdFromClassName('AdminParentCustomer');
         $languages       = Language::getLanguages();
         foreach ($languages as $lang) {
-            $tab->name[$lang['id_lang']] = 'Customer Auto Groups';
+            $tab->name[$lang['id_lang']] = $this->l('Customers Auto groups');
         }
         try {
             $tab->save();
@@ -67,8 +66,9 @@ class customerautogroups extends Module
             return false;
         }
 
-        if ( !$this->_installSql())
+        if (!$this->_installSql()) {
             return false;
+        }
 
         return true;
     }
@@ -104,8 +104,9 @@ class customerautogroups extends Module
                         PRIMARY KEY (`id_rule`,`id_lang`)
                       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;" ;
 
-        if ( !Db::getInstance()->Execute($sqlRule) || !Db::getInstance()->Execute($sqlRuleLang))
+        if (!Db::getInstance()->Execute($sqlRule) || !Db::getInstance()->Execute($sqlRuleLang)) {
             return false;
+        }
 
         return true;
     }
@@ -152,7 +153,7 @@ class customerautogroups extends Module
 
         //Si le client n'a pas d'adresse on ne peut pas traiter les règles liées aux données d'adresses.
         if (!$customer_addresses) {
-            $sqlCond = ' AND condition_type = 1 ';
+            $sqlCond = ' AND condition_type = '.AutoGroupRule::RULE_TYPE_CUSTOMER;
         } else {
             $sqlCond = '';
         }
@@ -166,16 +167,12 @@ class customerautogroups extends Module
             //Traitement des règles de type "Client"
             if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_CUSTOMER) {
                 $obj = $customer;
-            }
-            //Traitement des règles de type Adresse
-            else if ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS ) {
+            } elseif ($rule['condition_type'] == AutoGroupRule::RULE_TYPE_ADDRESS) {
                 //Normalement vu que le client vient d'être créé il ne peut avoir qu'une adresse
                 $id_address = Db::getInstance()->getValue("SELECT id_address FROM "._DB_PREFIX_."address WHERE id_customer=".$customer->id);
                 $obj        = new Address($id_address);
-            }
-            //Type Inconnu : non traité
-            else {
-                echo $this->l('Error : rule type unknow');
+            } else {
+                //echo $this->l('Error : rule type unknow');
                 continue;
             }
 
@@ -193,38 +190,66 @@ class customerautogroups extends Module
             switch ($rule['condition_operator']) {
 
                 case 'eq':
-                    if ($obj->{$rule['condition_field']} == $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} == $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'ne':
-                    if ($obj->{$rule['condition_field']} != $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} != $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'gt':
-                    if ($obj->{$rule['condition_field']} > $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} > $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'ge':
-                    if ($obj->{$rule['condition_field']} >= $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} >= $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'lt':
-                    if ($obj->{$rule['condition_field']} < $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} < $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'le':
-                    if ($obj->{$rule['condition_field']} <= $rule['condition_value']) $ruleApplied = true;
+                    if ($obj->{$rule['condition_field']} <= $rule['condition_value']) {
+                        $ruleApplied = true;
+                    }
                     break;
 
                 case 'LIKE %':
-                    if ( preg_match('#'.$rule['condition_value'].'#',$obj->{$rule['condition_field']}) )
+                    if (preg_match('#'.$rule['condition_value'].'#', $obj->{$rule['condition_field']})) {
                         $ruleApplied = true;
+                    }
                     break;
 
-                default:
-                    echo 'Erreur pas de cas matché';
-                    break;
+                case 'NOT LIKE %':
+                   if (!preg_match('#'.$rule['condition_value'].'#', $obj->{$rule['condition_field']})) {
+                       $ruleApplied = true;
+                   }
+                   break;
 
+                case 'IN':
+                   $options = explode(',',$rule['condition_value']);
+                   if (in_array($obj->{$rule['condition_field']},$options)) {
+                       $ruleApplied = true;
+                   }
+                   break;
+
+                case 'NOT IN':
+                   $options = explode(',',$rule['condition_value']);
+                   if (!in_array($obj->{$rule['condition_field']},$options)) {
+                       $ruleApplied = true;
+                   }
+                   break;
             }
 
             if ($ruleApplied) {
@@ -245,14 +270,15 @@ class customerautogroups extends Module
 
         }
         //Ajout du client aux groupes nécessaires
-        if ( sizeof($customerGroups)) {
+        if (sizeof($customerGroups)) {
 
             //Si le flag de suppression des groupes
-            if ( $cleanGroups )
+            if ($cleanGroups) {
                 $customer->cleanGroups();
+            }
 
             //Application du groupe par défaut
-            if ( $defaultGroup ) {
+            if ($defaultGroup) {
                 $customer->id_default_group = $defaultGroup;
                 try {
                     $customer->save();

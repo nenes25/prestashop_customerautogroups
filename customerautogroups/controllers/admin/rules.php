@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,10 +19,11 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author    Hennes Hervé <contact@h-hennes.fr>
- *  @copyright 2013-2015 Hennes Hervé
+ *  @copyright 2013-2016 Hennes Hervé
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  http://www.h-hennes.fr/blog/
  */
+
 include_once dirname(__FILE__).'/../../classes/AutoGroupRule.php';
 
 class RulesController extends ModuleAdminController
@@ -56,26 +57,26 @@ class RulesController extends ModuleAdminController
         $this->identifier = 'id_rule';
         $this->className  = 'AutoGroupRule';
         $this->lang       = true;
-	$this->context = Context::getContext();
+        $this->context = Context::getContext();
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-	$this->rules_types = array(
+        $this->rules_types = array(
             AutoGroupRule::RULE_TYPE_CUSTOMER => $this->l('Customer'),
             AutoGroupRule::RULE_TYPE_ADDRESS => $this->l('Customer Address')
         );
 
-	$this->_select = 'IF ( a.`condition_type` = '.AutoGroupRule::RULE_TYPE_CUSTOMER.' , \''.$this->l('Customer').'\',\''.$this->l('Customer Address').'\') AS condition_type_name,'
+        $this->_select = 'IF ( a.`condition_type` = '.AutoGroupRule::RULE_TYPE_CUSTOMER.' , \''.$this->l('Customer').'\',\''.$this->l('Customer Address').'\') AS condition_type_name,'
                 . 'gl.name AS group_name';
-	$this->_join = 'LEFT JOIN `'._DB_PREFIX_.'group_lang` gl ON (gl.`id_group` = a.`id_group` AND gl.`id_lang` = '.(int) $this->context->language->id.')';
-	$this->_orderWay  = 'ASC';
+        $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'group_lang` gl ON (gl.`id_group` = a.`id_group` AND gl.`id_lang` = '.(int) $this->context->language->id.')';
+        $this->_orderWay  = 'ASC';
 
         $this->bulk_actions = array('delete' => array('text' => $this->l('Delete selected'), 'icon' => 'icon-trash', 'confirm' => $this->l('Delete selected items?')));
 
         $groupsArray = array();
         $groups = Group::getGroups($this->context->language->id);
-        foreach ( $groups as $group){
-                $groupsArray[$group['id_group']] = $group['name'];
+        foreach ($groups as $group) {
+            $groupsArray[$group['id_group']] = $group['name'];
         }
 
         $this->fields_list = array(
@@ -145,7 +146,7 @@ class RulesController extends ModuleAdminController
     public function setMedia()
     {
         parent::setMedia();
-        $this->addJS(_MODULE_DIR_.'customerautogroups/views/admin/js/customerautogroups.js');
+        $this->addJS(_MODULE_DIR_.'customerautogroups/views/js/admin/customerautogroups.js');
     }
 
 
@@ -187,14 +188,14 @@ class RulesController extends ModuleAdminController
         }
 
         //Gestion de l'affichage du champ "condition_field" pour les règles déjà existantes
-        if ( Tools::getValue('id_rule')) {
+        if (Tools::getValue('id_rule')) {
             $rule = new AutoGroupRule(Tools::getValue('id_rule'));
-            if ( $rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER )
+            if ($rule->condition_type == AutoGroupRule::RULE_TYPE_CUSTOMER) {
                 $this->_conditionFieldDatas = $this->customerFields;
-            else
+            } else {
                 $this->_conditionFieldDatas = $this->addressFields;
-        }
-        else {
+            }
+        } else {
             $this->_conditionFieldDatas = $this->customerFields;
         }
     }
@@ -208,8 +209,9 @@ class RulesController extends ModuleAdminController
 
         //Liste des priorités
         $priorities   = array();
-        for ($i = 0; $i <= 10; $i++)
+        for ($i = 0; $i <= 10; $i++) {
             $priorities[] = array('id' => $i, 'value' => $i);
+        }
 
         //Liste des groupes clients
         $customerGroups = Group::getGroups($this->context->language->id);
@@ -223,13 +225,15 @@ class RulesController extends ModuleAdminController
             array('id' => 'lt', 'value' => '<'),
             array('id' => 'le', 'value' => '<='),
             array('id' => 'LIKE %', 'value' => 'LIKE %'),
+            array('id' => 'NOT LIKE %', 'value' => 'NOT LIKE %'),
+            array('id' => 'IN', 'value' => 'IN'),
+            array('id' => 'NOT IN', 'value' => 'NOT IN'),
         );
 
         //Avec Prestashop < 1.6 le type switch n'existe pas il faut le remplacer par un radio
-        if ( _PS_VERSION_ < '1.6') {
+        if (_PS_VERSION_ < '1.6') {
             $switch_type = 'radio';
-        }
-        else {
+        } else {
             $switch_type = 'switch';
         }
 
@@ -403,20 +407,36 @@ class RulesController extends ModuleAdminController
     /**
      * Mise à jour ajax des champs des règles en fonction du type
      */
-    public function displayAjaxUpdateConditionTypeSelect(){
-
+    public function displayAjaxUpdateConditionTypeSelect()
+    {
         $this->_initForm();
 
-        if ( Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_CUSTOMER ) {
+        if (Tools::getValue('condition_type') == AutoGroupRule::RULE_TYPE_CUSTOMER) {
             $fields = $this->customerFields;
-        }
-        else {
+        } else {
             $fields = $this->addressFields;
         }
 
-        foreach ( $fields as $field ) {
+        foreach ($fields as $field) {
             echo '<option value="'.$field['id'].'">'.$field['value'].'</option>';
         }
     }
+
+    /**
+     * Surcharge de la fonction de traduction sur PS 1.7 et supérieur.
+     * La fonction globale ne fonctionne pas
+     * @param type $string
+     * @param type $class
+     * @param type $addslashes
+     * @param type $htmlentities
+     * @return type
+     */
+    protected function l($string, $class = null, $addslashes = false, $htmlentities = true)
+    {
+        if ( _PS_VERSION_ >= '1.7') {
+            return Context::getContext()->getTranslator()->trans($string);
+        } else {
+            return parent::l($string, $class, $addslashes, $htmlentities);
+        }
+    }
 }
-?>
