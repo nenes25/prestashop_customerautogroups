@@ -31,7 +31,7 @@ class CustomerAutoGroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'others';
-        $this->version       = '0.4.0';
+        $this->version       = '0.5.0';
         $this->bootstrap = true;
         $this->need_instance = 0;
 
@@ -230,6 +230,26 @@ class CustomerAutoGroups extends Module
                         $ruleApplied = true;
                     }
                     break;
+
+                case 'NOT LIKE %':
+                   if (!preg_match('#'.$rule['condition_value'].'#', $obj->{$rule['condition_field']})) {
+                       $ruleApplied = true;
+                   }
+                   break;
+
+                case 'IN':
+                   $options = explode(',',$rule['condition_value']);
+                   if (in_array($obj->{$rule['condition_field']},$options)) {
+                       $ruleApplied = true;
+                   }
+                   break;
+
+                case 'NOT IN':
+                   $options = explode(',',$rule['condition_value']);
+                   if (!in_array($obj->{$rule['condition_field']},$options)) {
+                       $ruleApplied = true;
+                   }
+                   break;
             }
 
             if ($ruleApplied) {
