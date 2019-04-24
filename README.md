@@ -1,4 +1,7 @@
 # prestashop_customerautogroups
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/30a32ae760a54b10ae7955ca15ee7972)](https://app.codacy.com/app/nenes25/prestashop_customerautogroups?utm_source=github.com&utm_medium=referral&utm_content=nenes25/prestashop_customerautogroups&utm_campaign=Badge_Grade_Settings)
+
 Prestashop module which automaticaly add customer in groups depending params after registration.
 The rules can be combined, and can be sorted by priority.
 
