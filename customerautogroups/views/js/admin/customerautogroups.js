@@ -36,7 +36,7 @@ $(function(){
                 "condition_type" : $(this).val()
             },
             complete: function(msg){
-                $("#condition_field").html('').html(msg.responseText);
+                $("#condition_field").html("").html(msg.responseText);
             }
         });
     });
