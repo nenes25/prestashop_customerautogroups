@@ -137,9 +137,9 @@ class RulesController extends ModuleAdminController
     /**
      * Définition des médias du controller
      */
-    public function setMedia()
+    public function setMedia($isNewTheme = false)
     {
-        parent::setMedia();
+        parent::setMedia($isNewTheme);
         $this->addJS(_MODULE_DIR_.'customerautogroups/views/js/admin/customerautogroups.js');
     }
 
