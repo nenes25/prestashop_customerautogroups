@@ -79,7 +79,11 @@ class RulesController extends ModuleAdminController
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
             ),
-            'name' => array('title' => $this->l('Name')),
+            'name' => array(
+                'title' => $this->l('Name'),
+                'lang' => true,
+                'filter_key' => 'b!name',
+            ),
             'condition_type_name' => array(
                 'title' => $this->l('Condition Type'),
                 'align' => 'center',

@@ -10,3 +10,5 @@ V 0.3.3 - 2016-12-02 : Optimisation des lablels des filtres de la grille // Grid
 V 0.3.4 - 2016-12-07 : PS norms
 V 0.4.0 - 2017-04-06 : Compatibilité Prestashop 1.7 // Prestashop 1.7 compatibility
 V 0.5.0 - 2017-06-15 : Nouvelles conditions de filtres NOT LIKE, IN, NOT IN // New filters conditions NOT LIKE, IN, NOT IN
+V 0.5.1 - 2021-06-02 : #4 Backend error
+                       #5 Fix Column 'name' in where clause is ambiguous

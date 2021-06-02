@@ -25,7 +25,7 @@ class CustomerAutoGroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'others';
-        $this->version       = '0.5.0';
+        $this->version       = '0.5.1';
         $this->bootstrap = true;
         $this->need_instance = 0;
 
