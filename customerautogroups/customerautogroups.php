@@ -25,7 +25,7 @@ class CustomerAutoGroups extends Module
         $this->author        = 'hhennes';
         $this->name          = 'customerautogroups';
         $this->tab           = 'others';
-        $this->version       = '0.5.1';
+        $this->version       = '0.5.2';
         $this->bootstrap = true;
         $this->need_instance = 0;
 
@@ -40,7 +40,7 @@ class CustomerAutoGroups extends Module
      */
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd')) {
+        if (!parent::install() || !$this->registerHook('actionCustomerAccountAdd') || !$this->registerHook('actionObjectAddressUpdateAfter')) {
             return false;
         }
 
@@ -130,6 +130,17 @@ class CustomerAutoGroups extends Module
     public function hookActionCustomerAccountAdd($params)
     {
         $this->_processGroupRules($params['newCustomer']);
+    }
+
+    /**
+     * Hook Exécuté après la mise à jour d'une adresse
+     * @param array $params : informations du compte client créé
+     */
+    public function hookActionObjectAddressUpdateAfter($params)
+    {
+        $customer = new Customer($params['object']->id_customer);
+
+        $this->_processGroupRules($customer);
     }
 
     /**
